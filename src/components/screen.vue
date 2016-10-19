@@ -7,18 +7,24 @@
       placeholder="请输入电影名称"
       :number="true"
       size="large"
-      v-model="input">
+      v-model="filmName">
       <el-button slot="append">确定</el-button>
     </el-input>
   </div>
 </template>
 
 <script>
+import { Input, Button } from 'element-ui'
+
 export default {
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      filmName: ''
     }
+  },
+  components: {
+    'el-button': Button,
+    'el-input': Input
   }
 }
 </script>

@@ -7,13 +7,12 @@
         <br>
         <div class="block">
           <span class="demonstration">豆瓣评分</span>
-            <el-rate
-            v-model="value5"
+          <el-rate
+            v-model="scoreStar"
             disabled
-            show-text
-            text-color="#ff9900"
-            :text-template="value">
+            text-template="{value}">
           </el-rate>
+		  <span class="v-score">{{score}}</span>
         </div>
       </div>
       <ul class="v-desc">
@@ -28,8 +27,12 @@
       </ul>
       <div class="v-option">
         <div class="block">
-          <span class="demonstration">难度划分</span>
-          <el-rate v-model="value1"></el-rate>
+          <span class="demonstration">你觉得容易吗？</span>
+          <el-rate
+		    v-model="hard"
+			show-text
+			:texts="['容易', '容易', '一般', '困难', '困难']">
+		  </el-rate>
         </div>
         <ul class="icon-list">
           <li>
@@ -57,11 +60,24 @@
 </template>
 
 <script>
+import { Button, Rate } from 'element-ui'
+
 export default {
   data () {
     return {
-      value: '7.8'
+      maxNumber: 5,
+      score: 7.2,
+      hard: 4.2
     }
+  },
+  computed: {
+    scoreStar: function () {
+      return this.score / 2
+    }
+  },
+  components: {
+    'el-button': Button,
+    'el-rate': Rate
   }
 }
 </script>
@@ -73,7 +89,7 @@ export default {
     padding: 30px;
     box-sizing: border-box;
     height: 562px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.8);
     position: absolute;
     width: 1000px;
     top: 85px;
@@ -91,9 +107,19 @@ export default {
         display: block;
         width: 100%;
       }
-      .el-rate__text {
-        font-size: 20px;
-      }
+      .block {
+	    position: relative;
+		.el-rate {
+		  margin-top:5px;
+		}
+		.v-score {
+		  font-size: 20px;
+		  position: absolute;
+		  right: 5px;
+		  bottom: -3px;
+		  color:#ff9900;
+		}
+	  }
     }
     .v-desc {
       padding: 0 30px;

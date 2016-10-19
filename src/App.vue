@@ -45,17 +45,20 @@
 <script>
 import screen from './components/screen'
 import answer from './components/answer'
+import { Button, Input } from 'element-ui'
 
 export default {
   name: 'app',
   data () {
     return {
-      currentView: 'home'
+      textarea: ''
     }
   },
   components: {
     screen,
-    answer
+    answer,
+    'el-button': Button,
+    'el-input': Input
   }
 }
 </script>
@@ -77,6 +80,10 @@ export default {
 	}
 	dd {
 		margin-left: 0;
+	}
+	.wrap {
+	  width: 1000px;
+	  margin: 0 auto;
 	}
 	.bg-gray-lighter {
 		background-color: #eff2f7;
@@ -112,10 +119,6 @@ export default {
 					padding: 0 4px;
 					display: none;
 					cursor: pointer;
-					&:hover{
-						color: #FFF;
-						background-color: #ccc;
-					}
 				}
 			}
 			&:hover {
