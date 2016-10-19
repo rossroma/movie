@@ -60,12 +60,9 @@
 </template>
 
 <script>
-import { Button, Rate } from 'element-ui'
-
 export default {
   data () {
     return {
-      maxNumber: 5,
       score: 7.2,
       hard: 4.2
     }
@@ -74,10 +71,6 @@ export default {
     scoreStar: function () {
       return this.score / 2
     }
-  },
-  components: {
-    'el-button': Button,
-    'el-rate': Rate
   }
 }
 </script>

@@ -14,17 +14,11 @@
 </template>
 
 <script>
-import { Input, Button } from 'element-ui'
-
 export default {
   data () {
     return {
       filmName: ''
     }
-  },
-  components: {
-    'el-button': Button,
-    'el-input': Input
   }
 }
 </script>

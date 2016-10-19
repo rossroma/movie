@@ -45,7 +45,6 @@
 <script>
 import screen from './components/screen'
 import answer from './components/answer'
-import { Button, Input } from 'element-ui'
 
 export default {
   name: 'app',
@@ -56,9 +55,7 @@ export default {
   },
   components: {
     screen,
-    answer,
-    'el-button': Button,
-    'el-input': Input
+    answer
   }
 }
 </script>
