@@ -38,7 +38,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20" v-if="searchResult">
+        <el-row :gutter="20" v-if="!searchResult">
           <el-col :span="6">
             <img class="v-img" :src="form.images.large" alt="">
           </el-col>

@@ -7,7 +7,7 @@
           <span class="v-name">rossroma</span>
           2015-12-20 12:35
         </dt>
-        <dd><a>@爱飞舞的鱼</a>有种超现实的感觉~挺棒~</dd>
+        <dd><router-link to="/datalist">@爱飞舞的鱼</router-link>有种超现实的感觉~挺棒~</dd>
         <dd class="v-review color-gray hide"><a>回应</a></dd>
       </dl>
       <dl>
