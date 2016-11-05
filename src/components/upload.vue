@@ -1,261 +1,386 @@
 <template>
   <div class="v-upload">
-    <el-button type="text" @click.native="dialogVisible = true">点击打开 Dialog</el-button>
+    <el-button class="v-up" type="text" @click.native="dialogVisible = true">上传剧照</el-button>
 
     <el-dialog v-model="dialogVisible" size="full">
       <h1>上传我的剧照</h1>
+
       <div class="wrap">
-        <el-row :gutter="20">
+        <div class="v-tips">
+          <h3>上传小贴士：</h3>
+          只能上传jpg/png文件，且不超过500kb，使用在线图片上传时，无法上传豆瓣网等有防盗链设置的图片
+        </div>
+        <el-tabs type="card" @tab-click="handleClick">
+          <el-tab-pane label="本地图片上传"></el-tab-pane>
+          <el-tab-pane label="在线图片上传"></el-tab-pane>
+        </el-tabs>
+         <el-row :gutter="20">
           <el-col :span="12">
-            <el-upload
-              action="http://jsonplaceholder.typicode.com/"
-              type="drag"
-              :thumbnail-mode="true"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-            >
-              <i class="el-icon-upload"></i>
-              <div class="el-dragger__text">将文件拖到此处，或<em>点击上传</em></div>
-              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
+            <form v-if="tab" enctype="multipart/form-data" method="post" name="fileinfo">
+              <input type="file" style="display:none;" name="file" @change="upLocalImg" required />
+              <div class="v-uparea" @click="triggerFile">点击选择图片</div>
+            </form>
+            <div v-if="!tab">
+              <el-input placeholder="输入图片的URL" style="width: 400px;" v-model.trim="upimg">
+                <el-button slot="append" @click.native="onlineImg">上传</el-button>
+              </el-input>              
+            </div>
+            <img v-if="upimgResult" class="v-img-result" :src="upimgResult" alt="">
           </el-col>
           <el-col :span="12">
-            <el-input placeholder="请输入内容" v-model="filmName">
-            </el-input>
-            <div class="v-result">
+            <el-input placeholder="请输入电影标题" v-model="filmName">
+            </el-input>           
+            <div class="v-result" v-if="search.length">
               <ul>
-                <li>
+                <li v-for="item in search" @click="getFilmData(item.url)">
                   <div class="v-thumb">
-                    <img :src="form.images.small" alt="">
+                    <img :src="item.img" alt="">
                   </div>
                   <div class="v-con">
-                    <p>兰戈 <span>2011</span></p>
-                    <span>Rango</span>
+                    <p>{{item.title}} <span>{{item.year}}</span></p>
+                    <span>{{item.sub_title}}</span>
                   </div>
                 </li>
               </ul>
             </div>
           </el-col>
         </el-row>
-
-        <el-row :gutter="20" v-if="!searchResult">
+        <br><br>
+        <div v-loading="loading" v-if="loading" class="el-loading-demo"></div>
+        <el-row :gutter="20" v-if="searchResult">
           <el-col :span="6">
-            <img class="v-img" :src="form.images.large" alt="">
+            <img class="v-img" :src="filmInfos.images.large" alt="">
           </el-col>
-          <el-col :span="18">
-            <el-form ref="form" :model="form" label-width="80px" @submit.prevent="onSubmit">
-              <el-form-item label="电影标题">
-                <el-input v-model="filmTitel"></el-input>
-              </el-form-item>
-              <el-form-item label="导演">
-                <el-input v-model="filmDirectors"></el-input>
-              </el-form-item>
-              <el-form-item label="主演">
-                <el-input v-model="filmCasts"></el-input>
-              </el-form-item>
-              <el-form-item label="类型">
-                <el-input v-model="form.genres"></el-input>
-              </el-form-item>
-              <el-form-item label="年代">
-                <el-input v-model="form.year"></el-input>
-              </el-form-item>
-              <el-form-item label="地区">
-                <el-input v-model="form.countries"></el-input>
-              </el-form-item>
-              <el-form-item label="又名">
-                <el-input v-model="filmAka"></el-input>
-              </el-form-item>
-              <el-form-item label="简介">
-                <el-input type="textarea" v-model="form.summary"></el-input>
-              </el-form-item>
-            </el-form>
+          <el-col class="v-sercon" :span="18">
+            <el-row :gutter="20">
+              <el-col :span="2">标题:</el-col>
+              <el-col :span="22">{{filmInfos.title}}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">评分:</el-col>
+              <el-col :span="22">{{filmInfos.rating.average}}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">导演:</el-col>
+              <el-col :span="22">
+                <span v-for="i in filmInfos.directors">
+                  {{i.name}}&nbsp;&nbsp;
+                </span>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">主演:</el-col>
+              <el-col :span="22">
+                <span v-for="i in filmInfos.casts">
+                  {{i.name}}&nbsp;&nbsp;
+                </span>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">类型:</el-col>
+              <el-col :span="22">
+                <span v-for="i in filmInfos.genres">
+                  {{i}}&nbsp;&nbsp;
+                </span>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">年代:</el-col>
+              <el-col :span="22">{{filmInfos.year}}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">地区:</el-col>
+              <el-col :span="22">
+                <span v-for="i in filmInfos.countries">
+                  {{i}}&nbsp;&nbsp;
+                </span>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">又名:</el-col>
+              <el-col :span="22">
+                <span v-for="i in filmInfos.aka">
+                  {{i}}&nbsp;&nbsp;
+                </span>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="2">简介:</el-col>
+              <el-col :span="22">{{filmInfos.summary}}</el-col>
+            </el-row>
           </el-col>
         </el-row>
+
       </div>
-
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click.native="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click.native="dialogVisible = false">确 定</el-button>
-      </span>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" size="large" v-if="upButton" @click.native="submitInfos">上传</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-let formData = {
-  'rating': {
-    'max': 10,
-    'average': 7.8,
-    'stars': '40',
-    'min': 0
-  },
-  'reviews_count': 220,
-  'wish_count': 23622,
-  'douban_site': '',
-  'year': '2011',
-  'images': {
-    'small': 'https://img3.doubanio.com/view/movie_poster_cover/ipst/public/p1000880652.jpg',
-    'large': 'https://img3.doubanio.com/view/movie_poster_cover/lpst/public/p1000880652.jpg',
-    'medium': 'https://img3.doubanio.com/view/movie_poster_cover/spst/public/p1000880652.jpg'
-  },
-  'alt': 'https://movie.douban.com/subject/2998253/',
-  'id': '2998253',
-  'mobile_url': 'https://movie.douban.com/subject/2998253/mobile',
-  'title': '兰戈',
-  'do_count': null,
-  'share_url': 'https://m.douban.com/movie/subject/2998253',
-  'seasons_count': null,
-  'schedule_url': '',
-  'episodes_count': null,
-  'countries': [
-    '美国'
-  ],
-  'genres': [
-    '喜剧',
-    '动作',
-    '动画'
-  ],
-  'collect_count': 95671,
-  'casts': [
-    {
-      'alt': 'https://movie.douban.com/celebrity/1054456/',
-      'avatars': {
-        'small': 'https://img3.doubanio.com/img/celebrity/small/562.jpg',
-        'large': 'https://img3.doubanio.com/img/celebrity/large/562.jpg',
-        'medium': 'https://img3.doubanio.com/img/celebrity/medium/562.jpg'
-      },
-      'name': '约翰尼·德普',
-      'id': '1054456'
-    },
-    {
-      'alt': 'https://movie.douban.com/celebrity/1041001/',
-      'avatars': {
-        'small': 'https://img1.doubanio.com/img/celebrity/small/437.jpg',
-        'large': 'https://img1.doubanio.com/img/celebrity/large/437.jpg',
-        'medium': 'https://img1.doubanio.com/img/celebrity/medium/437.jpg'
-      },
-      'name': '艾拉·菲舍尔',
-      'id': '1041001'
-    },
-    {
-      'alt': 'https://movie.douban.com/celebrity/1025142/',
-      'avatars': {
-        'small': 'https://img3.doubanio.com/img/celebrity/small/75.jpg',
-        'large': 'https://img3.doubanio.com/img/celebrity/large/75.jpg',
-        'medium': 'https://img3.doubanio.com/img/celebrity/medium/75.jpg'
-      },
-      'name': '阿比盖尔·布蕾斯琳',
-      'id': '1025142'
-    },
-    {
-      'alt': 'https://movie.douban.com/celebrity/1010558/',
-      'avatars': {
-        'small': 'https://img3.doubanio.com/img/celebrity/small/23553.jpg',
-        'large': 'https://img3.doubanio.com/img/celebrity/large/23553.jpg',
-        'medium': 'https://img3.doubanio.com/img/celebrity/medium/23553.jpg'
-      },
-      'name': '尼德·巴蒂',
-      'id': '1010558'
-    }
-  ],
-  'current_season': null,
-  'original_title': 'Rango',
-  'summary': '兰戈（约翰尼·德普 Johnny Depp 配音）是一只干瘦、翠绿的蜥蜴，他住在鱼缸里，蓝天白云椰子树的假相让他倍感无聊，这个酷爱幻想和表演的家伙只得在头脑中编出属于自己的英雄剧。可就在某天，一个意外将他驱赶出惯常的方寸空间，兰戈莫名其妙来到了西部荒原的公路上。在沙漠中穿行的时候，兰戈遭到猎鹰的袭击。经过一番周折，他来到了名为黄沙（Dirt）的小镇，这里住着许多昆虫和动物，破败不堪，宛若死城。兰戈意外干掉了凶恶的猎鹰，由此被镇上的居民视为英雄，他也乐于享受这种荣誉，可是英雄毕竟不好当……\n本片荣获2012年奥斯卡金像奖最佳动画长片奖；2012年安尼奖最佳动画片、最佳角色设计、最佳编辑和最佳剧本奖；2011年青年选择奖最佳配音奖（约翰尼·德普）。©豆瓣',
-  'subtype': 'movie',
-  'directors': [
-    {
-      'alt': 'https://movie.douban.com/celebrity/1031987/',
-      'avatars': {
-        'small': 'https://img1.doubanio.com/img/celebrity/small/4299.jpg',
-        'large': 'https://img1.doubanio.com/img/celebrity/large/4299.jpg',
-        'medium': 'https://img1.doubanio.com/img/celebrity/medium/4299.jpg'
-      },
-      'name': '戈尔·维宾斯基',
-      'id': '1031987'
-    }
-  ],
-  'comments_count': 22043,
-  'ratings_count': 77329,
-  'aka': [
-    '飙风雷哥(台)',
-    '马拉高(港)',
-    '荒漠大冒险',
-    '雷人哥',
-    '宠物大冒险',
-    '里戈',
-    '兰格'
-  ]
-}
+import bus from '../bus'
 export default {
   data () {
     return {
       dialogVisible: false,
       filmName: '',
-      form: formData,
-      searchResult: false
-    }
-  },
-  computed: {
-    filmTitel: function () {
-      console.log(this.form.title)
-      if (this.form.title !== this.form.original_title) {
-        return this.form.title + ' ' + this.form.original_title
-      } else {
-        return this.form.title
-      }
-    },
-    filmDirectors: function () {
-      let result = ''
-      for (let d in this.form.directors) {
-        result += this.form.directors[d].name + '/'
-      }
-      return result.slice(0, -1)
-    },
-    filmCasts: function () {
-      let result = ''
-      for (let c in this.form.casts) {
-        result += this.form.casts[c].name + '/'
-      }
-      return result.slice(0, -1)
-    },
-    filmAka: function () {
-      let result = ''
-      for (let a in this.form.aka) {
-        result += this.form.aka[a] + '/'
-      }
-      return result.slice(0, -1)
+      search: [],
+      loading: false,
+      searchResult: false,
+      filmInfos: {},
+      upimg: '',
+      upimgResult: '',
+      objectid:'',
+      tab: true
     }
   },
   methods: {
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
+    // 选项卡
+    handleClick(tab) {
+      tab = Number(tab)
+      if (tab === 1) {
+        this.tab = true
+      } else {
+        this.tab = false
+      }
     },
-    handlePreview (file) {
-      console.log(file)
-    }
+    //出发上传控件
+    triggerFile () {
+      var objFile = document.forms.namedItem("fileinfo").file
+      objFile.click()
+    },
+    // 上传本地图片
+    upLocalImg () {
+      var oData = new FormData(document.forms.namedItem("fileinfo"))
+      var oReq = new XMLHttpRequest()
+      oReq.open("POST", bus._val.path + "upimg", true)
+      var self = this
+      oReq.onload = function(oEvent) {
+        if (oReq.status == 200) {
+          self.upimgResult = oReq.responseText
+          console.log(self.upimgResult)
+        } else {
+          console.log(oReq)
+        }
+      }
+      oReq.send(oData)
+    },
+    // 上传线上图片
+    onlineImg () {
+      if (this.upimg) {
+        this.$http.get(bus._val.path + 'upimgUrl?pic=' + this.upimg)
+            .then(function (response) {
+              if (response.status === 200) {  
+                this.upimgResult = response.body.path + response.body.name
+              } else {
+                console.log(response.status)
+              }
+            })
+      } else {
+        this.message('请输入正确的图片地址','warning')
+      }
+    },
+    //获取电影
+    getFilmData (url) {
+      this.search.length = 0
+      this.searchResult = false
+      this.loading = true
+      // 通过url获取电影id
+      var id = url.match(/[0-9]{7,8}/)
+      this.$http.get(bus._val.path + 'getFilm?id=' + id[0])
+          .then(function (response) {
+            if (response.status === 200) {
+              this.filmInfos = response.body
+              this.loading = false
+              this.searchResult = true
+            } else {
+              console.log(response.status)
+            }
+          })
+      // 检索电影是否已存入数据库
+      this.$http.get(bus._val.path + 'exist?id=' + id[0])
+          .then(function (response) {
+            if (response.status === 200) {
+              var data = response.body
+              if (data.results.length) {
+                this.objectid = data.results[0].objectId
+              } else {
+                this.objectid = ''
+              }
+            } else {
+              console.log(response.status)
+            }
+          })
+    },
+    // 提交数据
+    submitInfos () {
+      if (this.objectid) {
+        var picBody = {movie:{__type:"Pointer",className:"movie",objectId:this.objectid},images:this.upimgResult,status:0}
+        this.$http.post(bus._val.path + 'addPicture', picBody)
+            .then(function (response) {
+              if (response.status === 200) {
+                this.upSuccess()
+                console.log('已存在：'+response.body)
+              } else {
+                console.log(response.status)
+              }
+            })
+      } else {
+        function arrToStr(arr) {
+          var result = ''
+          for (let i in arr) {
+            if (typeof(arr[i]) === 'object') {
+              result += arr[i].name+'/'
+            } else {
+              result += arr[i]+'/'
+            }
+          }
+          return result.slice(0,-1)
+        }
+        var body = {
+          movie: {
+            id: this.filmInfos.id,
+            title: this.filmInfos.title,
+            thumb: this.filmInfos.images.large,
+            original_title: this.filmInfos.title,
+            rating: this.filmInfos.rating.average,
+            year: this.filmInfos.year,
+            countries: arrToStr(this.filmInfos.countries),
+            genres: arrToStr(this.filmInfos.genres),
+            directors: arrToStr(this.filmInfos.directors),
+            casts: arrToStr(this.filmInfos.casts),
+            aka: arrToStr(this.filmInfos.aka),
+            summary: this.filmInfos.summary.slice(0,160),
+            status: 0
+          },
+          picture: this.upimgResult
+        }
+        this.$http.post(bus._val.path + 'addMovie', body)
+            .then(function (response) {
+              if (response.status === 200) {
+                this.upSuccess()
+                console.log(response.body)
+              } else {
+                console.log(response.status)
+              }
+            })
+      }
+    },
+    // 上传成功
+    upSuccess () {
+      this.message('上传成功','success')
+      this.filmName = ''
+      this.upimgResult = ''
+      this.searchResult = false
+      this.upimg = ''      
+    },
+    // 提示信息
+    message (mes, type) {
+      this.$message({
+        message: mes,
+        type: type
+      })
+    },
   },
   watch: {
-    'filmName': function (val) {
-      this.$http.jsonp('https://movie.douban.com/j/subject_suggest?q=' + this.filmName)
-          .then(function (response) {
-            console.log(response)
-          })
+    filmName: function (val) {
+      if (val) {
+        this.$http.get(bus._val.path + 'search?keyword=' + val)
+            .then(function (response) {
+              if (response.status === 200) {
+                this.search = response.body
+              } else {
+                console.log(response.status)
+              }
+            })
+          } else {
+            this.search.length = 0
+          }
+    }
+  },
+  computed: {
+    upButton: function () {
+      if ( this.filmName && this.searchResult) {
+        return true
+      } else {
+        return false
+      }
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+  .v-uparea{
+    padding: 6px;
+    width: 250px;
+    font-weight: bold;
+    border: 2px dashed #20a0ff;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+    opacity: 0.8;
+    cursor: pointer;
+    &:hover{
+      opacity: 1;
+      border-color: #0095FF;
+      background-color: #f5f5f5;
+    }
+  }
+  .el-loading-demo {
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+    overflow: hidden;
+  }
   .v-img {
     display: block;
     width: 100%;
   }
+  .v-img-result {
+    display: block;
+    width: 20%;
+    margin-top: 10px;
+  }
+  .v-up {
+    position: fixed;
+    right: -40px;
+    top: 30px;
+    padding: 8px 60px;
+    background-color: #FF678D;
+    color: #fff;
+    font-family: 'microsoft yahei';
+    transform: rotate(45deg);
+    box-shadow: #999 0 1px 3px;
+    &:hover{
+      color: #fff;
+      box-shadow: #FF4D7C 0px 0px 6px;
+    }
+  }
+  .v-tips {
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    padding: 0 20px 18px;
+    margin-bottom: 10px;
+  }
+  .v-sercon{
+    .el-row{
+      margin-bottom: 10px;
+      .el-col-2{
+        color: #888;
+      }
+    }
+  }
   .v-result {
     position: relative;
     margin-top: 5px;
+    z-index: 999;    
     ul {
       position: absolute;
+      background-color: #fff;
       width: 100%;
       left: 0;
       top: 0;
@@ -292,5 +417,8 @@ export default {
         }
       }
     }
+  }
+  .dialog-footer{
+    text-align: center;
   }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div class="v-answer">
-    <h2>兰戈 Rango</h2>
+  <div class="v-answer" :style="{ height: iHeight + 'px' }">
+    <h2>{{ movie.title }} <span v-if="movie.title !== movie.original_title">{{ movie.original_title }}</span></h2>
     <div class="v-article">
       <div class="v-main-pic">
-        <img src="../assets/main-pic.jpg" alt="">
+        <img :src="movie.thumb" alt="">
         <br>
         <div class="block">
           <span class="demonstration">豆瓣评分</span>
@@ -12,47 +12,46 @@
             disabled
             text-template="{value}">
           </el-rate>
-		  <span class="v-score">{{score}}</span>
+		  <span class="v-score">{{movie.rating}}</span>
         </div>
       </div>
       <ul class="v-desc">
-        <li><span class="color-gray">导演: </span>戈尔·维宾斯基</li>
-        <li><span class="color-gray">主演: </span> 约翰尼·德普 / 艾拉·菲舍尔 / 阿比盖尔·布蕾斯琳</li>
-        <li><span class="color-gray">类型: </span> 喜剧 / 动作 / 动画 / 家庭 / 西部 / 冒险</li>
-        <li><span class="color-gray">地区: </span>美国</li>
-        <li><span class="color-gray">语言: </span>英语</li>
-        <li><span class="color-gray">上映日期: </span>2011-03-04(美国)</li>
-        <li><span class="color-gray">别名: </span>飙风雷哥(台) / 马拉高(港) / 荒漠大冒险 / 雷人哥 / 宠物大冒险 / 里戈 / 兰格</li>
-        <li><span class="color-gray">IMDB链接: </span><a href="" target="_blank">tt1192628</a></li>
+        <li><span class="color-gray">导演: </span>{{ movie.directors }}</li>
+        <li><span class="color-gray">主演: </span>{{ movie.casts }}</li>
+        <li><span class="color-gray">类型: </span>{{ movie.genres }}</li>
+        <li><span class="color-gray">地区: </span>{{ movie.countries }}</li>
+        <li><span class="color-gray">年代: </span>{{ movie.year }}</li>
+        <li><span class="color-gray">别名: </span>{{ movie.aka }}</li>
+        <li><span class="color-gray">简介: </span>{{ movie.summary }}</li>
       </ul>
       <div class="v-option">
         <div class="block">
           <span class="demonstration">你觉得容易吗？</span>
           <el-rate
-		    v-model="hard"
-			show-text
-			:texts="['容易', '容易', '一般', '困难', '困难']">
-		  </el-rate>
+    		    v-model="hard"
+    			show-text
+    			:texts="['容易', '容易', '一般', '困难', '困难']">
+    		  </el-rate>
         </div>
         <ul class="icon-list">
           <li>
-            <span><i class="el-icon-yduihao"></i>
+            <span @click="like(1, $event)"><i class="el-icon-good"></i>
               <em>Like</em>
             </span>
           </li>
           <li>
-            <span><i class="el-icon-yduihuai"></i>
+            <span @click="like(0, $event)"><i class="el-icon-bad"></i>
               <em>Unlike</em>
             </span>
           </li>
           <li>
-            <span><i class="el-icon-yduiwenhao"></i>
-              <em>反馈</em>
+            <span><i class="el-icon-warning"></i>
+              <em>有错误</em>
             </span>
           </li>
         </ul>
         <div class="v-next">
-          <el-button type="info">下一题<i class="el-icon-arrow-right el-icon-right"></i></el-button>
+          <el-button @click.native="next()" type="info">下一题<i class="el-icon-arrow-right el-icon-next"></i></el-button>
         </div>        
       </div>
     </div>
@@ -60,16 +59,42 @@
 </template>
 
 <script>
+import bus from '../bus'
+
 export default {
   data () {
     return {
-      score: 7.2,
-      hard: 4.2
+      hard: 0,
+      likeMethod: true
     }
   },
+  props: ['movie', 'iHeight', 'picId'],
   computed: {
     scoreStar: function () {
-      return this.score / 2
+      return this.movie.rating / 2
+    }
+  },
+  methods: {
+    // 下一题
+    next () {
+      bus.$emit('answer-show', false)
+      bus.$emit('get-new')
+    },
+    // 喜欢
+    like (bol, event) {
+      if (this.likeMethod) {
+        // 添加一个点击动画效果
+        event.currentTarget.className = 'like-animate'
+        this.$http.get(bus._val.path + 'like/' + this.picId + '?bol=' + bol)
+            .then(function (response) {
+              if (response.status === 200) {
+                console.log(response.body)
+              } else {
+                console.log(response.status)
+              }
+            })
+        this.likeMethod = false
+      }
     }
   }
 }
@@ -153,7 +178,7 @@ export default {
             display: inline-block;
             line-height: normal;
             vertical-align: middle; 
-            cursor: pointer;           
+            cursor: pointer; 
             i {
               font-size: 26px;
               display: block;
@@ -173,6 +198,16 @@ export default {
                 opacity: 1;
               }
             }
+            &.like-animate {
+              color: #f00;
+              transform: perspective(1px) translateZ(0);
+              box-shadow: 0 0 1px transparent;
+              animation: clickaction 0.3s;
+              transform: scale(1);
+              i {
+                color: #f00;
+              }
+            }   
           }
         }
       }
@@ -182,5 +217,9 @@ export default {
         bottom: 50px;
       }
     }
+  }
+
+  @keyframes clickaction {
+    50% {transform: scale(1.2);}
   }
 </style>
