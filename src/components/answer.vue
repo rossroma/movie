@@ -29,8 +29,9 @@
           <span class="demonstration">你觉得容易吗？</span>
           <el-rate
     		    v-model="hard"
-    			show-text
-    			:texts="['容易', '容易', '一般', '困难', '困难']">
+      			show-text
+            void-color="#999999"
+      			:texts="['容易', '容易', '一般', '困难', '困难']">
     		  </el-rate>
         </div>
         <ul class="icon-list">
@@ -45,13 +46,13 @@
             </span>
           </li>
           <li>
-            <span><i class="el-icon-warning"></i>
+            <span @click="postErros"><i class="el-icon-warning"></i>
               <em>有错误</em>
             </span>
           </li>
         </ul>
         <div class="v-next">
-          <el-button @click.native="next()" type="info">下一题<i class="el-icon-arrow-right el-icon-next"></i></el-button>
+          <el-button @click.native="next()" type="info">下一题 <i class="el-icon-arrow-right el-icon-next"></i></el-button>
         </div>        
       </div>
     </div>
@@ -65,7 +66,9 @@ export default {
   data () {
     return {
       hard: 0,
-      likeMethod: true
+      likeMethod: true,
+      errorMethod: true,
+      rate: {}
     }
   },
   props: ['movie', 'iHeight', 'picId'],
@@ -77,6 +80,9 @@ export default {
   methods: {
     // 下一题
     next () {
+      if (this.hard) {
+        this.rating()
+      }
       bus.$emit('answer-show', false)
       bus.$emit('get-new')
     },
@@ -95,6 +101,39 @@ export default {
             })
         this.likeMethod = false
       }
+    },
+    // 提交错误
+    postErros () {
+      if (this.errorMethod) {
+        this.$http.get(bus._val.path + 'addErrors?objectId=' + this.picId)
+            .then(function (response) {
+              if (response.status === 200) {
+                this.message('bug已提交，谢谢你的反馈！','success')
+                console.log(response.body)
+              } else {
+                console.log(response.status)
+              }
+            })
+        this.errorMethod = false
+      }
+    },
+    // 评级
+    rating () {
+      this.$http.get(bus._val.path + 'rate/' + this.picId+'?rating='+this.hard)
+          .then(function (response) {
+            if (response.status === 200) {
+              console.log(response.body)
+            } else {
+              console.log(response.status)
+            }
+          })
+    },
+    // 提示信息
+    message (mes, type) {
+      this.$message({
+        message: mes,
+        type: type
+      })
     }
   }
 }

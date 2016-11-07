@@ -113,7 +113,7 @@
 
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" size="large" v-if="upButton" @click.native="submitInfos">上传</el-button>
+        <el-button type="primary" size="large" v-if="upButton" @click.native="submitInfos">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -217,7 +217,7 @@ export default {
     // 提交数据
     submitInfos () {
       if (this.objectid) {
-        var picBody = {movie:{__type:"Pointer",className:"movie",objectId:this.objectid},images:this.upimgResult,status:0}
+        var picBody = {movie:{__type:"Pointer",className:"movie",objectId:this.objectid},images:this.upimgResult,rating:{average:0,stars:0,total:0},status:0}
         this.$http.post(bus._val.path + 'addPicture', picBody)
             .then(function (response) {
               if (response.status === 200) {
@@ -232,19 +232,19 @@ export default {
           var result = ''
           for (let i in arr) {
             if (typeof(arr[i]) === 'object') {
-              result += arr[i].name+'/'
+              result += arr[i].name+' / '
             } else {
-              result += arr[i]+'/'
+              result += arr[i]+' / '
             }
           }
-          return result.slice(0,-1)
+          return result.slice(0,-2)
         }
         var body = {
           movie: {
             id: this.filmInfos.id,
             title: this.filmInfos.title,
             thumb: this.filmInfos.images.large,
-            original_title: this.filmInfos.title,
+            original_title: this.filmInfos.original_title,
             rating: this.filmInfos.rating.average,
             year: this.filmInfos.year,
             countries: arrToStr(this.filmInfos.countries),
@@ -282,7 +282,7 @@ export default {
         message: mes,
         type: type
       })
-    },
+    }
   },
   watch: {
     filmName: function (val) {
@@ -302,7 +302,7 @@ export default {
   },
   computed: {
     upButton: function () {
-      if ( this.filmName && this.searchResult) {
+      if ( this.upimgResult && this.searchResult) {
         return true
       } else {
         return false

@@ -22,6 +22,12 @@
         <span>{{ row.movie.objectId }}</span>
       </el-table-column>
       <el-table-column
+        inline-template
+        label="难度"
+        width="100">
+        <span>{{ row.rating.average }}</span>
+      </el-table-column>
+      <el-table-column
         property="createdAt"
         sortable
         label="日期"
