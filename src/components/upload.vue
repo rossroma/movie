@@ -159,33 +159,49 @@ export default {
     },
     // 上传本地图片
     upLocalImg () {
-      var oData = new FormData(document.forms.namedItem("fileinfo"))
-      var oReq = new XMLHttpRequest()
-      oReq.open("POST", bus._val.path + "upimg", true)
-      var self = this
-      oReq.onload = function(oEvent) {
-        if (oReq.status == 200) {
-          self.upimgResult = oReq.responseText
-          console.log(self.upimgResult)
-        } else {
-          console.log(oReq)
+      var form = document.forms.namedItem("fileinfo")
+      var file_url = new RegExp(form.file.value.slice(-4),"i")
+      var imgTypes = '.jpg,.jpeg,.png'
+      if (file_url.test(imgTypes)) {
+        var oData = new FormData(form)
+        var oReq = new XMLHttpRequest()
+        oReq.open("POST", bus._val.path + "upimg", true)
+        var self = this
+        oReq.onload = function(oEvent) {
+          if (oReq.status == 200) {
+            self.upimgResult = oReq.responseText
+          } else {
+            console.log(oReq)
+          }
         }
+        oReq.send(oData)
+      } else {
+        this.message('请上传正确的图片格式','warning')
       }
-      oReq.send(oData)
+    },
+    CheckImgExists (imgurl) {  
+      var ImgObj = new Image() //判断图片是否存在  
+      ImgObj.src = imgurl  
+      //没有图片，则返回-1  
+      if (ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)) {  
+        return true  
+      } else {  
+        return false
+      }  
     },
     // 上传线上图片
     onlineImg () {
-      if (this.upimg) {
+      if (this.upimg && this.CheckImgExists(this.upimg)) {
         this.$http.get(bus._val.path + 'upimgUrl?pic=' + this.upimg)
             .then(function (response) {
               if (response.status === 200) {  
-                this.upimgResult = response.body.path + response.body.name
+                this.upimgResult = response.body.path + response.body.name                
               } else {
                 console.log(response.status)
               }
             })
       } else {
-        this.message('请输入正确的图片地址','warning')
+        this.message('图片地址有误，请检查后重新上传','warning')
       }
     },
     //获取电影
@@ -223,7 +239,7 @@ export default {
     // 提交数据
     submitInfos () {
       if (this.objectid) {
-        var picBody = {movie:{__type:"Pointer",className:"movie",objectId:this.objectid},images:this.upimgResult,rating:{average:0,stars:0,total:0},status:0}
+        var picBody = {movie:{__type:"Pointer",className:"movie",objectId:this.objectid},images:this.upimgResult,rating:{average:0,stars:0,total:0},status:2}
         this.$http.post(bus._val.path + 'addPicture', picBody)
             .then(function (response) {
               if (response.status === 200) {

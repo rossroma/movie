@@ -1,7 +1,7 @@
 <template>
 	<div class="wrap">
 		<h1>猜电影</h1>
-		<screen :images="currentFilm.images+'-large'" :answerText="!answerShow"></screen>
+		<screen :images="newImg" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
 		<br>
 		<br>
@@ -79,6 +79,11 @@ export default {
     resetHeight (h) {
       this.imgHeight = h
     }
+  },
+  computed: {
+  	newImg: function () {
+  		return this.currentFilm.images + '-large'
+  	}
   }
 }
 </script>

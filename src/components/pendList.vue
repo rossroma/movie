@@ -38,6 +38,7 @@
         label="操作">
         <div>
           <a href="javascript:;" @click="delItem( row.objectId )">删除</a>
+          <a href="javascript:;" @click="delItem( row.objectId, 0 )">审核</a>
         </div>
       </el-table-column>
     </el-table>
@@ -75,7 +76,7 @@ export default {
   methods: {
     // 获取电影列表
     getPictureList () {
-      this.$http.get(bus._val.path + 'picture?page=' + this.page+'&status='+0)
+      this.$http.get(bus._val.path + 'picture?page=' + this.page+'&status='+2)
           .then(function (response) {
             if (response.status === 200) {
               let data = response.body
@@ -87,11 +88,15 @@ export default {
           })
     },
     // 删除
-    delItem (objectId) {
-      this.$http.get(bus._val.path + 'delPicture/' + objectId + '?status='+1)
+    delItem (objectId, status) {
+      if (status !== 0) {
+        status = 1 
+      }
+      console.log(status)
+      this.$http.get(bus._val.path + 'delPicture/' + objectId+'?status='+status)
           .then(function (response) {
             if (response.status === 200) {
-              this.message('删除成功','success')
+              this.message('操作成功','success')
               this.getPictureList()
             } else {
               console.log(response.status)
