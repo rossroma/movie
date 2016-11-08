@@ -1,7 +1,7 @@
 <template>
 	<div class="wrap">
 		<h1>猜电影</h1>
-		<screen :images="newImg" :answerText="!answerShow"></screen>
+		<screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
 		<br>
 		<br>

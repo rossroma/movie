@@ -42,15 +42,40 @@ export default {
       loading: false
     }
   },
-  props: ['images', 'answerText'],
+  props: ['images', 'answerText', 'rightAnswer'],
   methods: {
     // 输入答案
     enterAnswer () {
+      console.log(this.rightAnswer.title)
       if (this.filmName) {
-         bus.$emit('answer-show', true)
+        if (this.answerMatch (this.filmName, this.rightAnswer.title)) {
+          this.notify (1, '厉害了我的哥，这都能猜对！')
+        } else {
+          this.notify (0, '猜不中了吧，要加油啊！', 'error')
+        }
+        bus.$emit('answer-show', true)
       } else {
         this.message()
       }
+    },
+    // 判断答案对错
+    answerMatch (userVal, dataVal) {
+      this.regcn = str => str.replace(/[^\u4e00-\u9fa5]/g, '')
+      const regResult = this.regcn(dataVal)
+      const regTest = this.regcn(userVal)
+      if (regResult.length <=3) {
+        return regResult === regTest 
+      } else {
+        return Boolean(regResult.search(regTest)+1) && regTest.length>=3
+      }
+    },
+    // 回答后的提示
+    notify (title, message, type) {
+      this.$notify({
+        title: title ? '答对啦！' : '答错了！',
+        message: message,
+        type: type ? type : 'success'
+      });
     },
     // 输入为空时提示的内容
     message () {

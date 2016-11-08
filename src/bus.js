@@ -1,10 +1,10 @@
 import Vue from 'vue'
 const globalVal = {
 	// 本地测试ip
-	path: 'http://172.168.8.248/'
+	// path: 'http://127.0.0.1/'
 
 	// 线上IP或域名
-	// path: 'http://123.206.213.35/'
+	path: 'http://123.206.213.35/'
 }
 var bus = new Vue()
 bus._val = globalVal
