@@ -102,5 +102,9 @@ export default {
 	.v-text-right {
 		text-align: right;
 	}
-
+	.el-table {
+		a{
+			color: #20a0ff;
+		}
+	}
 </style>
