@@ -10,8 +10,8 @@
       :number="true"
       size="large"
       v-model="filmName">
-      <el-button slot="append" @click.native="enterAnswer">确定</el-button>
-    </el-input>    
+      <el-button slot="append" @click.native="enterAnswer">确定&跳过</el-button>      
+    </el-input>
   </div>
 </template>
 
@@ -54,13 +54,16 @@ export default {
         }
         bus.$emit('answer-show', true)
       } else {
-        this.message()
+        // 输入为空时跳过该题目
+        bus.$emit('get-new')
       }
     },
     // 判断答案对错
     answerMatch (userVal, cnVal, enVal) {
+      // 将答案进行正则替换，只保留汉字和英文
       this.regcn = str => str.replace(/[^\u4e00-\u9fa5]/g, '')
       this.regen = str => str.replace(/[^a-z]/i, '')
+      // 汉字匹配规则，至少匹配3个汉字
       function regcnFun(regResult, regTest) {
         if (regResult.length <=3) {
           return regResult === regTest 
@@ -68,6 +71,7 @@ export default {
           return Boolean(regResult.search(regTest)+1) && regTest.length>=3
         }
       }
+      // 英文匹配规则，至少匹配6个英文字母
       function regenFun(regResult, regTest) {
         if ( regResult.length>1 )
           if (regResult.length <=5) {
@@ -79,6 +83,7 @@ export default {
           return false
         }
       }
+      // 中英文匹配其一即算对
       let final = regcnFun(this.regcn(cnVal), this.regcn(userVal)) || regenFun(this.regen(enVal), this.regen(userVal))
       return final
     },
@@ -90,6 +95,7 @@ export default {
         type: type ? type : 'success'
       });
     },
+    // 随机显示回答提示语
     ranMessage (bol) {
       var arr
       if (bol) {
@@ -99,13 +105,6 @@ export default {
       }
       var num = Math.floor(Math.random() * arr.length)
       return arr[num]
-    },
-    // 输入为空时提示的内容
-    message () {
-      this.$message({
-        message: '请输入电影名称',
-        type: 'warning'
-      })
     },
     // 清空输入框
     clearFilm () {
