@@ -46,12 +46,11 @@ export default {
   methods: {
     // 输入答案
     enterAnswer () {
-      console.log(this.rightAnswer.title)
       if (this.filmName) {
-        if (this.answerMatch (this.filmName, this.rightAnswer.title)) {
-          this.notify (1, '厉害了我的哥，这都能猜对！')
+        if (this.answerMatch (this.filmName, this.rightAnswer.title, this.rightAnswer.original_title)) {
+          this.notify (1, this.ranMessage(1))
         } else {
-          this.notify (0, '猜不中了吧，要加油啊！', 'error')
+          this.notify (0, this.ranMessage(), 'error')
         }
         bus.$emit('answer-show', true)
       } else {
@@ -59,15 +58,29 @@ export default {
       }
     },
     // 判断答案对错
-    answerMatch (userVal, dataVal) {
+    answerMatch (userVal, cnVal, enVal) {
       this.regcn = str => str.replace(/[^\u4e00-\u9fa5]/g, '')
-      const regResult = this.regcn(dataVal)
-      const regTest = this.regcn(userVal)
-      if (regResult.length <=3) {
-        return regResult === regTest 
-      } else {
-        return Boolean(regResult.search(regTest)+1) && regTest.length>=3
+      this.regen = str => str.replace(/[^a-z]/i, '')
+      function regcnFun(regResult, regTest) {
+        if (regResult.length <=3) {
+          return regResult === regTest 
+        } else {
+          return Boolean(regResult.search(regTest)+1) && regTest.length>=3
+        }
       }
+      function regenFun(regResult, regTest) {
+        if ( regResult.length>1 )
+          if (regResult.length <=5) {
+            return regResult.toLowerCase() === regTest.toLowerCase()
+          } else {
+            return Boolean(regResult.search(RegExp(regTest,'i'))+1) && regTest.length>=6
+          }
+        else {
+          return false
+        }
+      }
+      let final = regcnFun(this.regcn(cnVal), this.regcn(userVal)) || regenFun(this.regen(enVal), this.regen(userVal))
+      return final
     },
     // 回答后的提示
     notify (title, message, type) {
@@ -76,6 +89,16 @@ export default {
         message: message,
         type: type ? type : 'success'
       });
+    },
+    ranMessage (bol) {
+      var arr
+      if (bol) {
+        arr = ['厉害了我的哥，这都能猜对！','大哥，你这是蒙对的吧！','哎呦！不错哦！下一题还能才对么？','6翻了，无敌是多么寂寞！','就你牛逼！','我不相信这是你猜对的，除非你亲我一下！','又对了，你咋不上天呢！']
+      } else {
+        arr = ['猜不中了吧，要加油啊！','这都没猜对，蓝瘦，香菇！','这一题我闭着眼睛都能猜对！','前辈！在下对你的答案有不同的看法！','你这么回答是什么意思？','对方不想和你说话，并向你丢了一个正确答案！']
+      }
+      var num = Math.floor(Math.random() * arr.length)
+      return arr[num]
     },
     // 输入为空时提示的内容
     message () {
