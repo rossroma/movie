@@ -17,6 +17,7 @@
 
 <script>
 import bus from '../bus'
+import { Notification } from 'element-ui'
 
 export default {
   created: function () {
@@ -32,7 +33,7 @@ export default {
     var _this = this
     img.onload = function () {
       _this.loading = false
-      bus.$emit('screen-height', img.height)     
+      bus.$emit('screen-height', img.height)
     }
   },
   data () {
@@ -89,7 +90,7 @@ export default {
     },
     // 回答后的提示
     notify (title, message, type) {
-      this.$notify({
+      Notification({
         title: title ? '答对啦！' : '答错了！',
         message: message,
         type: type ? type : 'success'

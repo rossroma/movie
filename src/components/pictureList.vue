@@ -109,7 +109,7 @@ export default {
       }
     },
     message (mes, type) {
-      this.$message({
+      Message({
         message: mes,
         type: type
       })

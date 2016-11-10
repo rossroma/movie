@@ -60,6 +60,7 @@
 
 <script>
 import bus from '../bus'
+import { Message } from 'element-ui'
 
 export default {
   mounted () {
@@ -113,7 +114,7 @@ export default {
       }
     },
     message (mes, type) {
-      this.$message({
+      Message({
         message: mes,
         type: type
       })
