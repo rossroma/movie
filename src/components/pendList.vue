@@ -2,9 +2,8 @@
   <div class="picture-list">
     <el-table
       :data="tableData"
-      selection-mode="multiple"
       style="width: 100%"
-      @selectionchange="handleMultipleSelectionChange">
+      @selection-change="handleMultipleSelectionChange">
       <el-table-column
         type="selection"
         width="50">
@@ -45,8 +44,8 @@
     <div class="block mt10">
       <el-button size="small"><span @click="delItems()">批量删除</span></el-button>
       <el-pagination
-        @sizechange="handleSizeChange"
-        @currentchange="handleCurrentChange"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
         :current-page="1"
         :page-size="15"
         layout="total, prev, pager, next"

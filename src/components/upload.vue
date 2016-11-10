@@ -17,8 +17,8 @@
           </ul>
         </div>
         <el-tabs type="card" @tab-click="handleClick">
-          <el-tab-pane label="本地图片上传"></el-tab-pane>
-          <el-tab-pane label="在线图片上传"></el-tab-pane>
+          <el-tab-pane name="local" label="本地图片上传"></el-tab-pane>
+          <el-tab-pane name="online" label="在线图片上传"></el-tab-pane>
         </el-tabs>
          <el-row :gutter="20">
           <el-col :span="12">
@@ -144,9 +144,8 @@ export default {
   },
   methods: {
     // 选项卡
-    handleClick(tab) {
-      tab = Number(tab)
-      if (tab === 1) {
+    handleClick(val) {
+      if (val.name === 'local') {
         this.tab = true
       } else {
         this.tab = false

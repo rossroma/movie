@@ -36,12 +36,12 @@
         </div>
         <ul class="icon-list">
           <li>
-            <span @click="like(1, $event)"><i class="el-icon-good"></i>
+            <span @click="like(1, $event)"><i class="el-icon-star-on"></i>
               <em>Like</em>
             </span>
           </li>
           <li>
-            <span @click="like(0, $event)"><i class="el-icon-bad"></i>
+            <span @click="like(0, $event)"><i class="el-icon-delete"></i>
               <em>Unlike</em>
             </span>
           </li>
