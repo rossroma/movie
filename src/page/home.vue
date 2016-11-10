@@ -3,9 +3,8 @@
 		<h1>猜电影</h1>
 		<screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
-		<br>
-		<br>
-		<upload></upload>		
+		<upload></upload>
+		<a href="/about" class="v-about">About</a>
 	</div>
 </template>
 
@@ -121,6 +120,20 @@ export default {
 	.el-table {
 		a{
 			color: #20a0ff;
+		}
+	}
+	.v-about {
+		font-weight: bold;
+		color: #aaa;
+		font-size: 16px;
+		position: fixed;
+		right: 40px;
+		bottom: 20px;
+		text-decoration: none;
+		transition:all 0.3s;
+		&:hover {
+			color: #888;
+			text-decoration: underline;
 		}
 	}
 </style>
