@@ -27,7 +27,7 @@
               <div class="v-uparea" @click="triggerFile">点击选择图片</div>
             </form>
             <div v-if="!tab">
-              <el-input placeholder="输入图片的URL" style="width: 400px;" v-model.trim="upimg">
+              <el-input placeholder="输入图片的URL" style="width: 400px;" v-model="upimg">
                 <el-button slot="append" @click.native="onlineImg">上传</el-button>
               </el-input>              
             </div>
@@ -182,28 +182,35 @@ export default {
     },
     CheckImgExists (imgurl) {  
       var ImgObj = new Image() //判断图片是否存在  
-      ImgObj.src = imgurl  
-      //没有图片，则返回-1  
-      if (ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)) {  
-        return true  
-      } else {  
-        return false
-      }  
+      ImgObj.src = imgurl
+      return new Promise(function (resolve, reject) {
+				ImgObj.onload = function(){
+				  resolve(true)
+				}
+				ImgObj.onerror =function(){
+				  resolve(false)
+				}
+      })
     },
     // 上传线上图片
     onlineImg () {
-      if (this.upimg && this.CheckImgExists(this.upimg)) {
-        this.$http.get(bus._val.path + 'upimgUrl?pic=' + this.upimg)
-            .then(function (response) {
-              if (response.status === 200) {  
-                this.upimgResult = response.body.path + response.body.name                
-              } else {
-                console.log(response.status)
-              }
-            })
-      } else {
-        this.message('图片地址有误，请检查后重新上传','warning')
-      }
+      const that = this
+    	this.CheckImgExists(this.upimg).then(function(bol) {
+    		if (bol) {
+	        that.$http.get(bus._val.path + 'upimgUrl?pic=' + that.upimg)
+	            .then(function (response) {
+	              if (response.status === 200) {  
+	                that.upimgResult = response.body.path + response.body.name                
+	              } else {
+	                console.log(response.status)
+	              }
+	            })
+        } else {
+        	that.message('图片地址有误，请检查后重新上传','warning')
+        }
+      }, function (error) {
+      	console.log(error)    		
+      })
     },
     //获取电影
     getFilmData (url) {
