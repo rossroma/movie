@@ -4,7 +4,7 @@
 		<screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
 		<upload></upload>
-		<a href="/about" class="v-about">About</a>
+		<a :href="href" @click="go" class="v-about">About</a>
 	</div>
 </template>
 
@@ -33,7 +33,8 @@ export default {
     return {
       currentFilm: {},
       answerShow: false,
-      imgHeight: 0
+      imgHeight: 0,
+      href: '/about'
     }
   },
   components: {
@@ -76,6 +77,16 @@ export default {
     //重置answer页面高度
     resetHeight (h) {
       this.imgHeight = h
+    },
+    // 跳转链接
+    go (event) {
+      event.preventDefault()
+      this.$root.currentRoute = this.href
+      window.history.pushState(
+        null,
+        routes[this.href],
+        this.href
+      )
     }
   },
   computed: {
