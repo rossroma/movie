@@ -4,7 +4,7 @@ const globalVal = {
 	// path: 'http://127.0.0.1/'
 
 	// 线上IP或域名
-	path: 'http://123.206.213.35/'
+	path: '/'
 }
 var bus = new Vue()
 bus._val = globalVal

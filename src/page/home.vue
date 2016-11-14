@@ -4,7 +4,9 @@
 		<screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
 		<upload></upload>
-		<a :href="href" @click="go" class="v-about">About</a>
+		<div class="v-foot-nav">
+			<a href="#" @click="go('/about', $event)">About</a>
+		</div>
 	</div>
 </template>
 
@@ -13,6 +15,7 @@ import screen from '../components/screen'
 import answer from '../components/answer'
 import comments from '../components/comments'
 import upload from '../components/upload'
+import routes from '../routes'
 import bus from '../bus'
 
 export default {
@@ -33,8 +36,7 @@ export default {
     return {
       currentFilm: {},
       answerShow: false,
-      imgHeight: 0,
-      href: '/about'
+      imgHeight: 0
     }
   },
   components: {
@@ -79,13 +81,13 @@ export default {
       this.imgHeight = h
     },
     // 跳转链接
-    go (event) {
+    go (href, event) {
       event.preventDefault()
-      this.$root.currentRoute = this.href
+      this.$root.currentRoute = href
       window.history.pushState(
         null,
-        routes[this.href],
-        this.href
+        routes[href],
+        href
       )
     }
   },
@@ -133,18 +135,21 @@ export default {
 			color: #20a0ff;
 		}
 	}
-	.v-about {
-		font-weight: bold;
-		color: #aaa;
-		font-size: 16px;
+	.v-foot-nav {
 		position: fixed;
 		right: 40px;
 		bottom: 20px;
-		text-decoration: none;
-		transition:all 0.3s;
-		&:hover {
-			color: #888;
-			text-decoration: underline;
+		a{
+			text-decoration: none;
+			transition:all 0.3s;
+			font-weight: bold;
+			color: #aaa;
+			font-size: 16px;
+			margin-left: 10px;
+			&:hover {
+				color: #888;
+				text-decoration: underline;
+			}
 		}
 	}
 </style>
