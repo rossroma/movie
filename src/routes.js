@@ -1,5 +1,6 @@
 export default {
   '/': 'home',
   '/datalist': 'datalist',
-  '/about': 'about'
+  '/about': 'about',
+  '/login': 'login'
 }

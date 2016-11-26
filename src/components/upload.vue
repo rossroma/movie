@@ -1,6 +1,6 @@
 <template>
   <div class="v-upload">
-    <el-button class="v-up" type="text" @click.native="dialogVisible = true">上传剧照</el-button>
+    <el-button class="v-up" type="text" @click.native="dialogVisible=true">上传剧照</el-button>
 
     <el-dialog v-model="dialogVisible" size="full">
       <h1>上传我的剧照</h1>

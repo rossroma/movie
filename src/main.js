@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import routes from './routes'
+import layout from './layout.css'
 import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Icon, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox } from 'element-ui'
 import Resource from 'vue-resource'
 

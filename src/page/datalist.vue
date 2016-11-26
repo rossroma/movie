@@ -37,17 +37,7 @@ export default {
 </script>
 
 <style lang="less">
-  body {
-    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-  }
-  h1 {
-    text-align: center;
-    font-weight: normal;
-  }
-  .wrap {
-    width: 1000px;
-    margin: 0 auto;
-  }  .cell{
+  .cell{
     img{
       vertical-align: middle;
     }

@@ -3,9 +3,11 @@
 		<h1>猜电影</h1>
 		<screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
-		<upload></upload>
+		<upload :login="userName"></upload>
 		<div class="v-foot-nav">
 			<a href="#" @click="go('/about', $event)">About</a>
+			<a href="#" v-if="!userName" @click="go('/login', $event)">Login</a>
+			<a href="#" v-if="userName" @click="go('/userName', $event)">{{userName}}</a>
 		</div>
 	</div>
 </template>
@@ -31,12 +33,14 @@ export default {
 	},
   mounted () {
   	this.getCount()
+  	this.loginStatus()
   },
   data () {
     return {
       currentFilm: {},
       answerShow: false,
-      imgHeight: 0
+      imgHeight: 0,
+      userName: ''
     }
   },
   components: {
@@ -51,6 +55,20 @@ export default {
 	        .then(function (response) {
 	          if (response.status === 200) {
 	          	this.getNewFilm(response.body.count)
+	          } else {
+	            console.log(response.status)
+	          }
+	        })
+  	},
+   	// 查询登录状态
+  	loginStatus () {
+	    this.$http.get(bus._val.path + 'loginstatus')
+	        .then(function (response) {
+	          if (response.status === 200) {
+	          	console.log(response.body)
+	          	if (response.body) {
+	          		this.userName = response.body
+	          	}
 	          } else {
 	            console.log(response.status)
 	          }
@@ -100,27 +118,6 @@ export default {
 </script>
 
 <style lang="less">
-	body {
-		font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-	}
-	h1, h2 {
-	  font-weight: normal;
-	}
-	h1 {
-		text-align: center;
-	}
-	ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-	dd {
-		margin-left: 0;
-	}
-	.wrap {
-	  width: 1000px;
-	  margin: 0 auto;
-	}
 	.bg-gray-lighter {
 		background-color: #eff2f7;
 	}
