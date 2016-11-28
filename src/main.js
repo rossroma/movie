@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import routes from './routes'
 import layout from './layout.css'
-import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Icon, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox } from 'element-ui'
+import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Icon, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem } from 'element-ui'
 import Resource from 'vue-resource'
 
 Vue.use(Button)
@@ -19,6 +19,8 @@ Vue.use(TabPane)
 Vue.use(Pagination)
 Vue.use(Table)
 Vue.use(tableColumn)
+Vue.use(Menu)
+Vue.use(MenuItem)
 
 Vue.use(Resource)
 

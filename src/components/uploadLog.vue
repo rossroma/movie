@@ -1,13 +1,8 @@
 <template>
-  <div class="picture-list">
+  <div class="v-gamelog">
     <el-table
       :data="tableData"
-      style="width: 100%"
-      @selection-change="handleMultipleSelectionChange">
-      <el-table-column
-        type="selection"
-        width="50">
-      </el-table-column>
+      style="width: 100%">
       <el-table-column
         inline-template
         width="100"
@@ -34,14 +29,13 @@
       </el-table-column>
       <el-table-column
         inline-template
-        label="操作">
+        label="状态">
         <div>
-          <a href="javascript:;" @click="delItem( row.objectId )">删除</a>
+          {{ row.status | statusText }}
         </div>
       </el-table-column>
     </el-table>
     <div class="block mt10">
-      <el-button size="small"><span @click="delItems()">批量删除</span></el-button>
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -56,25 +50,27 @@
 
 <script>
 import bus from '../bus'
+import routes from '../routes'
+import { Message } from 'element-ui'
 
 export default {
   mounted () {
     this.getPictureList()
   },
-  data () {
-    return {
+  props: ['userinfo'],
+	data () {
+		return {
       tableData: [],
       multipleSelection: [],
       totalPages: 0,
       page: 0,
       message: ''
-    }
-  },
-  props: ['images'],
-  methods: {
+		}
+	},
+	methods: {
     // 获取剧照列表
     getPictureList () {
-      this.$http.get(bus._val.path + 'picture?page=' + this.page+'&status=0')
+      this.$http.get(bus._val.path + 'picture?page=' + this.page+'&status=0&user='+this.userinfo.objectId)
           .then(function (response) {
             if (response.status === 200) {
               let data = response.body
@@ -85,38 +81,6 @@ export default {
             }
           })
     },
-    // 删除
-    delItem (objectId) {
-      this.$http.get(bus._val.path + 'delPicture/' + objectId + '?status=1')
-          .then(function (response) {
-            if (response.status === 200) {
-              this.message('删除成功','success')
-              this.getPictureList()
-            } else {
-              console.log(response.status)
-            }
-          })
-    },
-    delItems () {
-      var arrId = ''
-      if (this.multipleSelection.length) {
-        for (let id in this.multipleSelection) {
-          arrId += this.multipleSelection[id].objectId + ','
-        }
-        this.delItem(arrId.slice(0, -1))
-      } else {
-        this.message('未选中任何数据','warning')
-      }
-    },
-    message (mes, type) {
-      Message({
-        message: mes,
-        type: type
-      })
-    },
-    handleMultipleSelectionChange(val) {
-      this.multipleSelection = val
-    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
     },
@@ -124,8 +88,20 @@ export default {
       this.page = (val-1)*15
       this.getPictureList ()
     }
-  }
+	},
+	filters: {
+		statusText: function (val) {
+			if (val === 0) {
+				return '已审核'
+			} else if (val === 2) {
+				return '待审核'
+			} else {
+				return '被拒绝'
+			}
+		}
+	}
 }
 </script>
 
-
+<style lang="less" scoped>
+</style>

@@ -7,7 +7,7 @@
 		<div class="v-foot-nav">
 			<a href="#" @click="go('/about', $event)">About</a>
 			<a href="#" v-if="!userName" @click="go('/login', $event)">Login</a>
-			<a href="#" v-if="userName" @click="go('/userName', $event)">{{userName}}</a>
+			<a href="#" v-if="userName" @click="go('/user', $event)">{{userName}}</a>
 		</div>
 	</div>
 </template>

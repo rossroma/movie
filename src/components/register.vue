@@ -112,19 +112,19 @@ export default {
 	                	}
 	                } else {
 	                  var that = this
-				      Message({
-				        message: '注册成功，一秒钟后跳转到首页。',
-				        duration:1500,
-				        onClose: function () {
-					        var href = '/'
-					        that.$root.currentRoute = href
-					        window.history.pushState(
-					          null,
-					          routes[href],
-					          href
-					        )	
-				        }
-				      })
+							      Message({
+							        message: '注册成功，一秒钟后跳转到首页。',
+							        duration:1500,
+							        onClose: function () {
+								        var href = '/'
+								        that.$root.currentRoute = href
+								        window.history.pushState(
+								          null,
+								          routes[href],
+								          href
+								        )	
+							        }
+							      })
 
 	                }
 	              } else {
