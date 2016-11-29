@@ -1,13 +1,13 @@
 <template>
 	<div class="wrap">
 		<h1>猜电影</h1>
-		<screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
+		<screen :images="newImg" :userid="userObid" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
 		<answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
 		<upload :login="userName"></upload>
 		<div class="v-foot-nav">
-			<a href="#" @click="go('/about', $event)">About</a>
-			<a href="#" v-if="!userName" @click="go('/login', $event)">Login</a>
-			<a href="#" v-if="userName" @click="go('/user', $event)">{{userName}}</a>
+			<router-link to="/about">About</router-link>
+			<router-link v-if="!userName" to="/login">Login</router-link>
+			<router-link v-if="userName" to="/user">{{userName}}</router-link>
 		</div>
 	</div>
 </template>
@@ -15,9 +15,7 @@
 <script>
 import screen from '../components/screen'
 import answer from '../components/answer'
-import comments from '../components/comments'
 import upload from '../components/upload'
-import routes from '../routes'
 import bus from '../bus'
 
 export default {
@@ -40,7 +38,8 @@ export default {
       currentFilm: {},
       answerShow: false,
       imgHeight: 0,
-      userName: ''
+      userName: '',
+      userObid: ''
     }
   },
   components: {
@@ -67,7 +66,8 @@ export default {
 	          if (response.status === 200) {
 	          	console.log(response.body)
 	          	if (response.body) {
-	          		this.userName = response.body
+	          		this.userName = response.body.name
+	          		this.userObid = response.body.obid
 	          	}
 	          } else {
 	            console.log(response.status)
@@ -97,21 +97,15 @@ export default {
     //重置answer页面高度
     resetHeight (h) {
       this.imgHeight = h
-    },
-    // 跳转链接
-    go (href, event) {
-      event.preventDefault()
-      this.$root.currentRoute = href
-      window.history.pushState(
-        null,
-        routes[href],
-        href
-      )
     }
   },
   computed: {
   	newImg: function () {
-  		return this.currentFilm.images + '-large'
+  		if (this.currentFilm.images) {
+  			return this.currentFilm.images + '-large'
+  		} else {
+  			return ''
+  		}
   	}
   }
 }

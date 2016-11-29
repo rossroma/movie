@@ -43,15 +43,17 @@ export default {
       loading: false
     }
   },
-  props: ['images', 'answerText', 'rightAnswer'],
+  props: ['images', 'answerText', 'rightAnswer', 'userid'],
   methods: {
     // 输入答案
     enterAnswer () {
       if (this.filmName) {
         if (this.answerMatch (this.filmName, this.rightAnswer.title, this.rightAnswer.original_title)) {
           this.notify (1, this.ranMessage(1))
+          this.gameLog('right')
         } else {
           this.notify (0, this.ranMessage(), 'error')
+          this.gameLog()
         }
         bus.$emit('answer-show', true)
       } else {
@@ -106,6 +108,20 @@ export default {
       }
       var num = Math.floor(Math.random() * arr.length)
       return arr[num]
+    },
+    // 答题记录
+    gameLog (str) {
+      //判断用户是否登录
+      if (this.userid) {
+      this.$http.get(bus._val.path + 'gamelog/' + this.userid +'?result='+str)
+          .then(function (response) {
+            if (response.status === 200) {
+              console.log(response.body)
+            } else {
+              console.log(response.status)
+            }
+          })
+      }
     },
     // 清空输入框
     clearFilm () {

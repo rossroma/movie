@@ -50,7 +50,6 @@
 
 <script>
 import bus from '../bus'
-import routes from '../routes'
 import { Message } from 'element-ui'
 
 export default {

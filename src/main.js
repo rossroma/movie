@@ -1,9 +1,10 @@
 import Vue from 'vue'
-import routes from './routes'
-import layout from './layout.css'
-import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Icon, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem } from 'element-ui'
+import App from './App'
+import VueRouter from 'vue-router'
 import Resource from 'vue-resource'
+Vue.use(Resource)
 
+import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Icon, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem } from 'element-ui'
 Vue.use(Button)
 Vue.use(Input)
 Vue.use(Checkbox)
@@ -22,25 +23,29 @@ Vue.use(tableColumn)
 Vue.use(Menu)
 Vue.use(MenuItem)
 
-Vue.use(Resource)
+// route
+Vue.use(VueRouter)
+import Home from './page/home'
+import dataList from './page/datalist'
+import about from './page/about'
+import login from './page/login'
+import user from './page/user'
 
-/* eslint-disable no-new */
-const app = new Vue({
-  el: '#app',
-  data: {
-    currentRoute: window.location.pathname
-  },
-  computed: {
-    ViewComponent () {
-      const matchingView = routes[this.currentRoute]
-      return require('./page/' + matchingView + '.vue')
-    }
-  },
-  render (h) {
-    return h(this.ViewComponent)
-  }
+const routes = [
+  { path: '/', component: Home },
+  { path: '/datalist', component: dataList },
+  { path: '/about', component: about },
+  { path: '/login', component: login },
+  { path: '/user', component: user }
+]
+
+const router = new VueRouter({
+   routes
 })
 
-window.addEventListener('popstate', () => {
-  app.currentRoute = window.location.pathname
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  render: h => h(App)
 })

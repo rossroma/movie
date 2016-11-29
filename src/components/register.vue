@@ -25,7 +25,6 @@
 
 <script>
 import bus from '../bus'
-import routes from '../routes'
 import { Message } from 'element-ui'
 
 export default {
@@ -111,18 +110,12 @@ export default {
 	                		this.message('错误：' + response.body.code+response.body.error,'error')
 	                	}
 	                } else {
-	                  var that = this
+	                	var that = this
 							      Message({
-							        message: '注册成功，一秒钟后跳转到首页。',
-							        duration:1500,
+							        message: '注册成功，请登录。',
+							        duration:1000,
 							        onClose: function () {
-								        var href = '/'
-								        that.$root.currentRoute = href
-								        window.history.pushState(
-								          null,
-								          routes[href],
-								          href
-								        )	
+								        that.$router.push('/login')
 							        }
 							      })
 

@@ -19,7 +19,6 @@
 
 <script>
 import bus from '../bus'
-import routes from '../routes'
 import { Message } from 'element-ui'
 
 export default {
@@ -37,19 +36,14 @@ export default {
 					username: this.username,	
 					password: this.password
 				}
+				var that = this
         this.$http.post(bus._val.path + 'signin', body)
             .then(function (response) {
               if (response.status === 200) {
                 if (response.body.error) {
                 	this.message('账号或密码错误','warning')
                 } else {
-					        var href = '/'
-					        this.$root.currentRoute = href
-					        window.history.pushState(
-					          null,
-					          routes[href],
-					          href
-					        )
+					        that.$router.push('/')
                 }
               } else {
                 console.log(response.status)

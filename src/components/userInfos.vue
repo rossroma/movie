@@ -38,7 +38,6 @@
 
 <script>
 import bus from '../bus'
-import routes from '../routes'
 import { Message, MessageBox } from 'element-ui'
 
 export default {
@@ -54,9 +53,17 @@ export default {
       MessageBox('退出登录', '此操作将退出登录, 是否继续?',{
         type: 'warning'
       }).then(() => {
-        console.log('取消')
+      var that = this
+      this.$http.get(bus._val.path + 'quit')
+          .then(function (response) {
+            if (response.status === 200) {
+		          that.$router.push('/')
+            } else {
+              console.log(response.status)
+            }
+          }) 
       }).catch(() => {
-        console.log('删除')        
+        console.log('取消') 
       })
 		}
 	}

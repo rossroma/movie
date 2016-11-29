@@ -21,7 +21,6 @@
 
 <script>
 import bus from '../bus'
-import routes from '../routes'
 import { Message } from 'element-ui'
 import gameLog from '../components/gameLog'
 import userInfos from '../components/userInfos'
@@ -50,22 +49,15 @@ export default {
       this.$http.get(bus._val.path + 'loginstatus')
           .then(function (response) {
             if (response.status === 200) {
-              console.log(response.body)
               if (response.body) {
-                this.getUser()
+                this.getUser(response.body.obid)
               } else {
                 var that = this
                 Message({
                   message: '登录已超时，请重新登录',
                   duration:1500,
                   onClose: function () {
-                    var href = '/login'
-                    that.$root.currentRoute = href
-                    window.history.pushState(
-                      null,
-                      routes[href],
-                      href
-                    ) 
+                    that.$router.push('/')
                   }
                 })
               }
@@ -74,8 +66,8 @@ export default {
             }
           })
     },
-    getUser () {
-      this.$http.get(bus._val.path + 'getuser')
+    getUser (objectId) {
+      this.$http.get(bus._val.path + 'getuser?id='+objectId)
           .then(function (response) {
             if (response.status === 200) {
               this.user = response.body
