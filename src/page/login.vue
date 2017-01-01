@@ -4,7 +4,7 @@
       <el-tabs type="card" @tab-click="handleClick">
         <el-tab-pane name="signin" label="登录"></el-tab-pane>
         <el-tab-pane name="register" label="注册"></el-tab-pane>
-      </el-tabs> 
+      </el-tabs>
     </div>
     <br>
     <signin v-if="tab === 'signin'"></signin>
@@ -28,17 +28,20 @@ export default {
     register
   },
   methods: {
-    handleClick(val) {
+    handleClick (val) {
       this.tab = val.name
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
   .v-tabs{
     margin: 100px 200px 0;
     text-align: center;
     border-bottom: 3px solid #ededee;
+    .el-tabs {
+      display: inline-block;
+    }
   }
 </style>

@@ -41,20 +41,6 @@ export default {
     return {
       textarea: ''
     }
-  },
-  methods: {
-    getData () {
-      this.$http({
-        method:'GET',
-        url:'https://api.bmob.cn/1/classes/movie/a0FZNNN0',
-        headers: {'X-Bmob-Application-Id': '897d8343de907640340fa6b06684b181','X-Bmob-REST-API-Key': '8a3d04621f341624f41a5db35d688abd','Content-Type': 'application/json'}
-      }).then(function(data){
-          console.log(data)
-      },function(error){
-          //error
-          console.log(error)
-      })
-    }
   }
 }
 </script>

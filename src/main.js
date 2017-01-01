@@ -40,7 +40,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-   routes
+  routes
 })
 
 /* eslint-disable no-new */

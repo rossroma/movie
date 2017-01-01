@@ -12,7 +12,7 @@
             disabled
             text-template="{value}">
           </el-rate>
-		  <span class="v-score">{{movie.rating}}</span>
+      <span class="v-score">{{movie.rating}}</span>
         </div>
       </div>
       <ul class="v-desc">
@@ -28,11 +28,11 @@
         <div class="block">
           <span class="demonstration">你觉得容易吗？</span>
           <el-rate
-    		    v-model="hard"
-      			show-text
+            v-model="hard"
+            show-text
             void-color="#999999"
-      			:texts="['容易', '容易', '一般', '困难', '困难']">
-    		  </el-rate>
+            :texts="['容易', '容易', '一般', '困难', '困难']">
+          </el-rate>
         </div>
         <ul class="icon-list">
           <li>
@@ -53,7 +53,7 @@
         </ul>
         <div class="v-next">
           <el-button @click.native="next()" type="info">下一题 <i class="el-icon-arrow-right el-icon-next"></i></el-button>
-        </div>        
+        </div>
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@ export default {
   },
   props: ['movie', 'iHeight', 'picId'],
   computed: {
-    scoreStar: function () {
+    scoreStar () {
       return this.movie.rating / 2
     }
   },
@@ -93,7 +93,7 @@ export default {
         // 添加一个点击动画效果
         event.currentTarget.className = 'like-animate'
         this.$http.get(bus._val.path + 'like/' + this.picId + '?bol=' + bol)
-            .then(function (response) {
+            .then((response) => {
               if (response.status === 200) {
                 console.log(response.body)
               } else {
@@ -107,9 +107,9 @@ export default {
     postErros () {
       if (this.errorMethod) {
         this.$http.get(bus._val.path + 'addErrors?objectId=' + this.picId)
-            .then(function (response) {
+            .then((response) => {
               if (response.status === 200) {
-                this.message('bug已提交，谢谢你的反馈！','success')
+                this.message('bug已提交，谢谢你的反馈！', 'success')
                 console.log(response.body)
               } else {
                 console.log(response.status)
@@ -120,8 +120,8 @@ export default {
     },
     // 评级
     rating () {
-      this.$http.get(bus._val.path + 'rate/' + this.picId+'?rating='+this.hard)
-          .then(function (response) {
+      this.$http.get(bus._val.path + 'rate/' + this.picId + '?rating=' + this.hard)
+          .then((response) => {
             if (response.status === 200) {
               console.log(response.body)
             } else {
@@ -166,18 +166,18 @@ export default {
         width: 100%;
       }
       .block {
-	    position: relative;
-		.el-rate {
-		  margin-top:5px;
-		}
-		.v-score {
-		  font-size: 20px;
-		  position: absolute;
-		  right: 5px;
-		  bottom: -3px;
-		  color:#ff9900;
-		}
-	  }
+      position: relative;
+    .el-rate {
+      margin-top:5px;
+    }
+    .v-score {
+      font-size: 20px;
+      position: absolute;
+      right: 5px;
+      bottom: -3px;
+      color:#ff9900;
+    }
+    }
     }
     .v-desc {
       padding: 0 30px;
@@ -213,18 +213,18 @@ export default {
           float: left;
           width: 33.3%;
           text-align: center;
-          font-size: 14px;         
+          font-size: 14px;
           span {
             display: inline-block;
             line-height: normal;
-            vertical-align: middle; 
-            cursor: pointer; 
+            vertical-align: middle;
+            cursor: pointer;
             i {
-              font-size: 26px;
+              font-size: 28px;
               display: block;
               margin-bottom: 10px;
               color: #8492a6;
-            } 
+            }
             em {
               font-style: normal;
               opacity: 0;
@@ -247,7 +247,7 @@ export default {
               i {
                 color: #f00;
               }
-            }   
+            }
           }
         }
       }
@@ -258,7 +258,6 @@ export default {
       }
     }
   }
-
   @keyframes clickaction {
     50% {transform: scale(1.2);}
   }

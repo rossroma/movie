@@ -76,8 +76,8 @@ export default {
   methods: {
     // 获取电影列表
     getPictureList () {
-      this.$http.get(bus._val.path + 'picture?page=' + this.page+'&status='+2)
-          .then(function (response) {
+      this.$http.get(bus._val.path + 'picture?page=' + this.page + '&status=' + 2)
+          .then((response) => {
             if (response.status === 200) {
               let data = response.body
               this.tableData = data.results
@@ -90,13 +90,13 @@ export default {
     // 删除
     delItem (objectId, status) {
       if (status !== 0) {
-        status = 1 
+        status = 1
       }
       console.log(status)
-      this.$http.get(bus._val.path + 'delPicture/' + objectId+'?status='+status)
-          .then(function (response) {
+      this.$http.get(bus._val.path + 'delPicture/' + objectId + '?status=' + status)
+          .then((response) => {
             if (response.status === 200) {
-              this.message('操作成功','success')
+              this.message('操作成功', 'success')
               this.getPictureList()
             } else {
               console.log(response.status)
@@ -104,14 +104,14 @@ export default {
           })
     },
     delItems () {
-      var arrId = ''
+      let arrId = ''
       if (this.multipleSelection.length) {
         for (let id in this.multipleSelection) {
           arrId += this.multipleSelection[id].objectId + ','
         }
         this.delItem(arrId.slice(0, -1))
       } else {
-        this.message('未选中任何数据','warning')
+        this.message('未选中任何数据', 'warning')
       }
     },
     message (mes, type) {
@@ -120,16 +120,16 @@ export default {
         type: type
       })
     },
-    handleMultipleSelectionChange(val) {
+    handleMultipleSelectionChange (val) {
       this.multipleSelection = val
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
-    handleCurrentChange(val) {
-      this.page = (val-1)*15
-      this.getPictureList ()
-    },
+    handleCurrentChange (val) {
+      this.page = (val - 1) * 15
+      this.getPictureList()
+    }
   }
 }
 </script>

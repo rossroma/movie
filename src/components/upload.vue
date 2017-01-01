@@ -1,10 +1,8 @@
 <template>
   <div class="v-upload">
     <el-button class="v-up" type="text" @click.native="dialogVisible=true">上传剧照</el-button>
-
     <el-dialog v-model="dialogVisible" size="full">
       <h1>上传我的剧照</h1>
-
       <div class="wrap">
         <div class="v-tips">
           <h3>上传小贴士：</h3>
@@ -29,13 +27,13 @@
             <div v-if="!tab">
               <el-input placeholder="输入图片的URL" style="width: 400px;" v-model="upimg">
                 <el-button slot="append" @click.native="onlineImg">上传</el-button>
-              </el-input>              
+              </el-input>
             </div>
             <img v-if="upimgResult" class="v-img-result" :src="upimgResult" alt="">
           </el-col>
           <el-col :span="12">
-            <el-input placeholder="请输入电影标题" v-model="filmName">
-            </el-input>           
+            <el-input placeholder="请输入电影标题" v-model.lazy="filmName">
+            </el-input>
             <div class="v-result" v-if="search.length">
               <ul>
                 <li v-for="item in search" @click="getFilmData(item.url)">
@@ -129,6 +127,18 @@
 import bus from '../bus'
 import { Message } from 'element-ui'
 
+function arrToStr (arr) {
+  let result = ''
+  for (let i in arr) {
+    if (typeof (arr[i]) === 'object') {
+      result += arr[i].name + ' / '
+    } else {
+      result += arr[i] + ' / '
+    }
+  }
+  return result.slice(0, -2)
+}
+
 export default {
   data () {
     return {
@@ -140,87 +150,85 @@ export default {
       filmInfos: {},
       upimg: '',
       upimgResult: '',
-      objectid:'',
+      objectid: '',
       tab: true
     }
   },
   methods: {
     // 选项卡
-    handleClick(val) {
+    handleClick (val) {
       if (val.name === 'local') {
         this.tab = true
       } else {
         this.tab = false
       }
     },
-    //出发上传控件
+    // 出发上传控件
     triggerFile () {
-      var objFile = document.forms.namedItem("fileinfo").file
+      const objFile = document.forms.namedItem('fileinfo').file
       objFile.click()
     },
     // 上传本地图片
     upLocalImg () {
-      var form = document.forms.namedItem("fileinfo")
-      var file_url = new RegExp(form.file.value.slice(-4),"i")
-      var imgTypes = '.jpg,.jpeg,.png'
-      if (file_url.test(imgTypes)) {
-        var oData = new FormData(form)
-        var oReq = new XMLHttpRequest()
-        oReq.open("POST", bus._val.path + "upimg", true)
-        var self = this
-        oReq.onload = function(oEvent) {
-          if (oReq.status == 200) {
-            self.upimgResult = oReq.responseText
+      const form = document.forms.namedItem('fileinfo')
+      const fileUrl = new RegExp(form.file.value.slice(-4), 'i')
+      const imgTypes = '.jpg,.jpeg,.png'
+      if (fileUrl.test(imgTypes)) {
+        const oData = new window.FormData(form)
+        const oReq = new window.XMLHttpRequest()
+        oReq.open('POST', bus._val.path + 'upimg', true)
+        oReq.onload = (oEvent) => {
+          if (oReq.status === 200) {
+            this.upimgResult = oReq.responseText
           } else {
             console.log(oReq)
           }
         }
         oReq.send(oData)
       } else {
-        this.message('请上传正确的图片格式','warning')
+        this.message('请上传正确的图片格式', 'warning')
       }
     },
-    CheckImgExists (imgurl) {  
-      var ImgObj = new Image() //判断图片是否存在  
+    CheckImgExists (imgurl) {
+      const ImgObj = new window.Image() // 判断图片是否存在
       ImgObj.src = imgurl
-      return new Promise(function (resolve, reject) {
-				ImgObj.onload = function(){
-				  resolve(true)
-				}
-				ImgObj.onerror =function(){
-				  resolve(false)
-				}
+      return new Promise((resolve, reject) => {
+        ImgObj.onload = () => {
+          resolve(true)
+        }
+        ImgObj.onerror = () => {
+          resolve(false)
+        }
       })
     },
     // 上传线上图片
     onlineImg () {
-      const that = this
-    	this.CheckImgExists(this.upimg).then(function(bol) {
-    		if (bol) {
-	        that.$http.get(bus._val.path + 'upimgUrl?pic=' + that.upimg)
-	            .then(function (response) {
-	              if (response.status === 200) {  
-	                that.upimgResult = response.body.path + response.body.name                
-	              } else {
-	                console.log(response.status)
-	              }
-	            })
+      this.CheckImgExists(this.upimg).then((bol) => {
+        if (bol) {
+          this.$http.get(bus._val.path + 'upimgUrl?pic=' + this.upimg)
+              .then((response) => {
+                if (response.status === 200) {
+                  this.upimgResult = response.body.path + response.body.name
+                } else {
+                  console.log(response.status)
+                }
+              })
         } else {
-        	that.message('图片地址有误，请检查后重新上传','warning')
+          this.message('图片地址有误，请检查后重新上传', 'warning')
         }
-      }, function (error) {
-      	console.log(error)    		
+      }, (error) => {
+        console.log(error)
       })
     },
-    //获取电影
+    // 获取电影
     getFilmData (url) {
       this.search.length = 0
       this.searchResult = false
       this.loading = true
       // 通过url获取电影id
-      var id = url.match(/[0-9]{7,8}/)
+      const id = url.match(/[0-9]{7,8}/)
       this.$http.get(bus._val.path + 'getFilm?id=' + id[0])
-          .then(function (response) {
+          .then((response) => {
             if (response.status === 200) {
               this.filmInfos = response.body
               this.loading = false
@@ -231,9 +239,9 @@ export default {
           })
       // 检索电影是否已存入数据库
       this.$http.get(bus._val.path + 'exist?id=' + id[0])
-          .then(function (response) {
+          .then((response) => {
             if (response.status === 200) {
-              var data = response.body
+              const data = response.body
               if (data.results.length) {
                 this.objectid = data.results[0].objectId
               } else {
@@ -247,29 +255,17 @@ export default {
     // 提交数据
     submitInfos () {
       if (this.objectid) {
-        var picBody = {movie:{__type:"Pointer",className:"movie",objectId:this.objectid},images:this.upimgResult,rating:{average:0,stars:0,total:0},status:2}
+        const picBody = { movie: { __type: 'Pointer', className: 'movie', objectId: this.objectid }, images: this.upimgResult, rating: { average: 0, stars: 0, total: 0 }, status: 2 }
         this.$http.post(bus._val.path + 'addPicture', picBody)
-            .then(function (response) {
+            .then((response) => {
               if (response.status === 200) {
                 this.upSuccess()
-                console.log('已存在：'+response.body)
               } else {
                 console.log(response.status)
               }
             })
       } else {
-        function arrToStr(arr) {
-          var result = ''
-          for (let i in arr) {
-            if (typeof(arr[i]) === 'object') {
-              result += arr[i].name+' / '
-            } else {
-              result += arr[i]+' / '
-            }
-          }
-          return result.slice(0,-2)
-        }
-        var body = {
+        const body = {
           movie: {
             id: this.filmInfos.id,
             title: this.filmInfos.title,
@@ -282,16 +278,15 @@ export default {
             directors: arrToStr(this.filmInfos.directors),
             casts: arrToStr(this.filmInfos.casts),
             aka: arrToStr(this.filmInfos.aka),
-            summary: this.filmInfos.summary.slice(0,160),
+            summary: this.filmInfos.summary.slice(0, 160),
             status: 0
           },
           picture: this.upimgResult
         }
         this.$http.post(bus._val.path + 'addMovie', body)
-            .then(function (response) {
+            .then((response) => {
               if (response.status === 200) {
                 this.upSuccess()
-                console.log(response.body)
               } else {
                 console.log(response.status)
               }
@@ -300,11 +295,11 @@ export default {
     },
     // 上传成功
     upSuccess () {
-      this.message('上传成功','success')
+      this.message('上传成功', 'success')
       this.filmName = ''
       this.upimgResult = ''
       this.searchResult = false
-      this.upimg = ''      
+      this.upimg = ''
     },
     // 提示信息
     message (mes, type) {
@@ -315,24 +310,24 @@ export default {
     }
   },
   watch: {
-    filmName: function (val) {
+    filmName (val) {
       if (val) {
         this.$http.get(bus._val.path + 'search?keyword=' + val)
-            .then(function (response) {
+            .then((response) => {
               if (response.status === 200) {
                 this.search = response.body
               } else {
                 console.log(response.status)
               }
             })
-          } else {
-            this.search.length = 0
-          }
+      } else {
+        this.search.length = 0
+      }
     }
   },
   computed: {
-    upButton: function () {
-      if ( this.upimgResult && this.searchResult) {
+    upButton () {
+      if (this.upimgResult && this.searchResult) {
         return true
       } else {
         return false
@@ -407,7 +402,7 @@ export default {
   .v-result {
     position: relative;
     margin-top: 5px;
-    z-index: 999;    
+    z-index: 999;
     ul {
       position: absolute;
       background-color: #fff;

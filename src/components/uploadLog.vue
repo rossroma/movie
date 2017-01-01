@@ -50,26 +50,25 @@
 
 <script>
 import bus from '../bus'
-import { Message } from 'element-ui'
 
 export default {
   mounted () {
     this.getPictureList()
   },
   props: ['userinfo'],
-	data () {
-		return {
+  data () {
+    return {
       tableData: [],
       multipleSelection: [],
       totalPages: 0,
       page: 0,
       message: ''
-		}
-	},
-	methods: {
+    }
+  },
+  methods: {
     // 获取剧照列表
     getPictureList () {
-      this.$http.get(bus._val.path + 'picture?page=' + this.page+'&status=0&user='+this.userinfo.objectId)
+      this.$http.get(bus._val.path + 'picture?page=' + this.page + '&status=0&user=' + this.userinfo.objectId)
           .then(function (response) {
             if (response.status === 200) {
               let data = response.body
@@ -80,25 +79,25 @@ export default {
             }
           })
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
-    handleCurrentChange(val) {
-      this.page = (val-1)*15
-      this.getPictureList ()
+    handleCurrentChange (val) {
+      this.page = (val - 1) * 15
+      this.getPictureList()
     }
-	},
-	filters: {
-		statusText: function (val) {
-			if (val === 0) {
-				return '已审核'
-			} else if (val === 2) {
-				return '待审核'
-			} else {
-				return '被拒绝'
-			}
-		}
-	}
+  },
+  filters: {
+    statusText (val) {
+      if (val === 0) {
+        return '已审核'
+      } else if (val === 2) {
+        return '待审核'
+      } else {
+        return '被拒绝'
+      }
+    }
+  }
 }
 </script>
 

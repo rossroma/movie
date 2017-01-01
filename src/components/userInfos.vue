@@ -1,88 +1,87 @@
 <template>
-	<div class="v-userinfos">
-	  <el-row>
-	    <el-col :span="4">
-	    	我的账号：
-	    </el-col>
-	    <el-col :span="20">
-	      {{userinfo.username}}
-	    </el-col>
-	  </el-row>
-	  <el-row>
-	    <el-col :span="4">
-	    	我的邮箱：
-	    </el-col>
-	    <el-col :span="20">
-	    	{{userinfo.email}}
-	    </el-col>
-	  </el-row>
-	  <el-row>
-	    <el-col :span="4">
-	    	手机号码：
-	    </el-col>
-	    <el-col :span="20">
-	    	{{userinfo.mobilePhoneNumber}}
-	    </el-col>
-	  </el-row>
-	  <el-row>
-	    <el-col :span="4">
-	    	创建时间：
-	    </el-col>
-	    <el-col :span="20">
-	      {{userinfo.createdAt}}
-	    </el-col>
-	  </el-row>
-	  <el-button class="v-quit" @click="quit">退出登录</el-button>
-	</div>
+  <div class="v-userinfos">
+    <el-row>
+      <el-col :span="4">
+        我的账号：
+      </el-col>
+      <el-col :span="20">
+        {{userinfo.username}}
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="4">
+        我的邮箱：
+      </el-col>
+      <el-col :span="20">
+        {{userinfo.email}}
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="4">
+        手机号码：
+      </el-col>
+      <el-col :span="20">
+        {{userinfo.mobilePhoneNumber}}
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="4">
+        创建时间：
+      </el-col>
+      <el-col :span="20">
+        {{userinfo.createdAt}}
+      </el-col>
+    </el-row>
+    <el-button class="v-quit" @click="quit">退出登录</el-button>
+  </div>
 </template>
 
 <script>
 import bus from '../bus'
-import { Message, MessageBox } from 'element-ui'
+import { MessageBox } from 'element-ui'
 
 export default {
-	props: ['userinfo'],
-	data () {
-		return {
-			disable: true,
-			emial: '',
-		}
-	},
-	methods: {
-		quit () {
-      MessageBox('退出登录', '此操作将退出登录, 是否继续?',{
+  props: ['userinfo'],
+  data () {
+    return {
+      disable: true,
+      emial: ''
+    }
+  },
+  methods: {
+    quit () {
+      MessageBox('退出登录', '此操作将退出登录, 是否继续?', {
         type: 'warning'
       }).then(() => {
-      var that = this
-      this.$http.get(bus._val.path + 'quit')
-          .then(function (response) {
-            if (response.status === 200) {
-		          that.$router.push('/')
-            } else {
-              console.log(response.status)
-            }
-          }) 
+        this.$http.get(bus._val.path + 'quit')
+            .then((response) => {
+              if (response.status === 200) {
+                this.$router.push('/')
+              } else {
+                console.log(response.status)
+              }
+            })
       }).catch(() => {
-        console.log('取消') 
+        console.log('取消')
       })
-		}
-	}
+    }
+  }
 }
 </script>
 
 <style lang="less">
-	.v-userinfos {
-		.el-row {
-			margin-bottom: 18px;
-			.el-col-20 {
-				color: #888;
-				line-height: 1.4;
-			}
-		}
-		.v-quit {
-			position: absolute;
-			right: 10px;
-			top: 0;
-		}
-	}
+  .v-userinfos {
+    .el-row {
+      margin-bottom: 18px;
+      .el-col-20 {
+        color: #888;
+        line-height: 1.4;
+      }
+    }
+    .v-quit {
+      position: absolute;
+      right: 10px;
+      top: 0;
+    }
+  }
 </style>

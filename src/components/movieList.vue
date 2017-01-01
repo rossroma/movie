@@ -40,7 +40,7 @@
         inline-template
         label="操作">
         <div>
-          <a href="javascript:;" @click="delItem( row.objectId )">删除</a> 
+          <a href="javascript:;" @click="delItem( row.objectId )">删除</a>
         </div>
       </el-table-column>
     </el-table>
@@ -80,7 +80,7 @@ export default {
     // 获取电影列表
     getMovieList () {
       this.$http.get(bus._val.path + 'movie?page=' + this.page)
-          .then(function (response) {
+          .then((response) => {
             if (response.status === 200) {
               let data = response.body
               this.tableData = data.results
@@ -93,9 +93,9 @@ export default {
     // 删除
     delItem (objectId) {
       this.$http.get(bus._val.path + 'delMovie/' + objectId)
-          .then(function (response) {
+          .then((response) => {
             if (response.status === 200) {
-              this.message('删除成功','success')
+              this.message('删除成功', 'success')
               this.getMovieList()
             } else {
               console.log(response.status)
@@ -103,14 +103,14 @@ export default {
           })
     },
     delItems () {
-      var arrId = ''
+      let arrId = ''
       if (this.multipleSelection.length) {
         for (let id in this.multipleSelection) {
           arrId += this.multipleSelection[id].objectId + ','
         }
         this.delItem(arrId.slice(0, -1))
       } else {
-        this.message('未选中任何数据','warning')
+        this.message('未选中任何数据', 'warning')
       }
     },
     message (mes, type) {
@@ -119,15 +119,15 @@ export default {
         type: type
       })
     },
-    handleMultipleSelectionChange(val) {
+    handleMultipleSelectionChange (val) {
       this.multipleSelection = val
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
-    handleCurrentChange(val) {
-      this.page = (val-1)*15
-      this.getMovieList ()
+    handleCurrentChange (val) {
+      this.page = (val - 1) * 15
+      this.getMovieList()
     }
   }
 }

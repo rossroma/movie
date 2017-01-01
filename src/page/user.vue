@@ -42,7 +42,7 @@ export default {
     uploadLog
   },
   methods: {
-    handleSelect(index) {
+    handleSelect (index) {
       this.currentView = index
     },
     loginStatus () {
@@ -55,7 +55,7 @@ export default {
                 var that = this
                 Message({
                   message: '登录已超时，请重新登录',
-                  duration:1500,
+                  duration: 1500,
                   onClose: function () {
                     that.$router.push('/')
                   }
@@ -67,7 +67,7 @@ export default {
           })
     },
     getUser (objectId) {
-      this.$http.get(bus._val.path + 'getuser?id='+objectId)
+      this.$http.get(bus._val.path + 'getuser?id=' + objectId)
           .then(function (response) {
             if (response.status === 200) {
               this.user = response.body
