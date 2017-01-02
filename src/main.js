@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 import Resource from 'vue-resource'
 Vue.use(Resource)
 
-import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Icon, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem } from 'element-ui'
+import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem } from 'element-ui'
 Vue.use(Button)
 Vue.use(Input)
 Vue.use(Checkbox)
@@ -14,7 +14,6 @@ Vue.use(Col)
 Vue.use(Rate)
 Vue.use(Loading)
 Vue.use(Dialog)
-Vue.use(Icon)
 Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Pagination)
@@ -25,11 +24,11 @@ Vue.use(MenuItem)
 
 // route
 Vue.use(VueRouter)
-import Home from './page/home'
-import dataList from './page/datalist'
-import about from './page/about'
-import login from './page/login'
-import user from './page/user'
+const Home = resolve => require(['./page/home'], resolve)
+const dataList = resolve => require(['./page/datalist'], resolve)
+const about = resolve => require(['./page/about'], resolve)
+const login = resolve => require(['./page/login'], resolve)
+const user = resolve => require(['./page/user'], resolve)
 
 const routes = [
   { path: '/', component: Home },

@@ -14,8 +14,6 @@
 
 <script>
 import screen from '../components/screen'
-import answer from '../components/answer'
-import upload from '../components/upload'
 import bus from '../bus'
 
 export default {
@@ -44,8 +42,12 @@ export default {
   },
   components: {
     screen,
-    answer,
-    upload
+    answer: (resolve) => {
+      require(['../components/answer'], resolve)
+    },
+    upload: (resolve) => {
+      require(['../components/upload'], resolve)
+    }
   },
   methods: {
     // 获取剧照总数
