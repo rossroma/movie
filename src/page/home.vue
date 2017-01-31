@@ -37,7 +37,8 @@ export default {
       answerShow: false,
       imgHeight: 0,
       userName: '',
-      userObid: ''
+      userObid: '',
+      pageCount: ''
     }
   },
   components: {
@@ -52,40 +53,30 @@ export default {
   methods: {
     // 获取剧照总数
     getCount () {
-      this.$http.get(bus._val.path + 'getCount')
-          .then((response) => {
-            if (response.status === 200) {
-              this.getNewFilm(response.body.count)
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = 'getCount'
+      bus.get(url, {}, (data) => {
+        this.pageCount = data.count
+        this.getNewFilm()
+      })
     },
     // 查询登录状态
     loginStatus () {
-      this.$http.get(bus._val.path + 'loginstatus')
-          .then((response) => {
-            if (response.status === 200) {
-              if (response.body) {
-                this.userName = response.body.name
-                this.userObid = response.body.obid
-              }
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = 'loginstatus'
+      bus.get(url, {}, (data) => {
+        this.userName = data.name
+        this.userObid = data.obid
+      })
     },
     // 随机获取一部电影
-    getNewFilm (count) {
+    getNewFilm () {
       bus.$emit('loading', true)
-      this.$http.get(bus._val.path + 'rd-pic?count=' + count)
-          .then((response) => {
-            if (response.status === 200) {
-              this.currentFilm = response.body.results[0]
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = 'rd-pic'
+      const params = {
+        rdNum: this.getRandom()
+      }
+      bus.get(url, params, (data) => {
+        this.currentFilm = data.results[0]
+      })
     },
     // 控制答案是否显示
     showAnswer (bol) {
@@ -98,6 +89,38 @@ export default {
     // 重置answer页面高度
     resetHeight (h) {
       this.imgHeight = h
+    },
+    // 条件判断 随机数是否被初始化
+    getRandom () {
+      const randomArray = bus.storage().get('RANDOM_ARRAY')
+      if (randomArray) {
+        const arr = `[${randomArray}]`
+        return this.sendRandom(JSON.parse(arr))
+      } else {
+        return this.initRandom()
+      }
+    },
+    // 初始化随机数
+    initRandom () {
+      let arr = []
+      for (let i = 0; i < this.pageCount; i++) {
+        arr.push(i)
+      }
+      bus.storage().set('RANDOM_ARRAY', arr)
+      return this.sendRandom(arr)
+    },
+    // 返回随机数
+    sendRandom (arr) {
+      if (arr.length) {
+        const num = Math.floor(Math.random() * arr.length)
+        window.setTimeout(function () {
+          arr.splice(num, 1)
+          bus.storage().set('RANDOM_ARRAY', arr)
+        }, 50)
+        return arr[num]
+      } else {
+        return this.initRandom()
+      }
     }
   },
   computed: {

@@ -32,22 +32,18 @@ export default {
   methods: {
     signin () {
       if (this.username && this.password) {
-        let body = {
+        const url = `signin`
+        const body = {
           username: this.username,
           password: this.password
         }
-        this.$http.post(bus._val.path + 'signin', body)
-            .then((response) => {
-              if (response.status === 200) {
-                if (response.body.error) {
-                  this.message('账号或密码错误', 'warning')
-                } else {
-                  this.$router.push('/')
-                }
-              } else {
-                console.log(response.status)
-              }
-            })
+        bus.post(url, body, (data) => {
+          if (data.error) {
+            this.message('账号或密码错误', 'warning')
+          } else {
+            this.$router.push('/')
+          }
+        })
       } else {
         this.message('用户名或密码不能为空', 'warning')
       }

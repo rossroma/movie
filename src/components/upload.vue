@@ -176,12 +176,12 @@ export default {
       if (fileUrl.test(imgTypes)) {
         const oData = new window.FormData(form)
         const oReq = new window.XMLHttpRequest()
-        oReq.open('POST', bus._val.path + 'upimg', true)
+        oReq.open('POST', bus.path + 'upimg', true)
         oReq.onload = (oEvent) => {
           if (oReq.status === 200) {
             this.upimgResult = oReq.responseText
           } else {
-            console.log(oReq)
+            this.message(oReq, 'warning')
           }
         }
         oReq.send(oData)
@@ -205,66 +205,56 @@ export default {
     onlineImg () {
       this.CheckImgExists(this.upimg).then((bol) => {
         if (bol) {
-          this.$http.get(bus._val.path + 'upimgUrl?pic=' + this.upimg)
-              .then((response) => {
-                if (response.status === 200) {
-                  this.upimgResult = response.body.path + response.body.name
-                } else {
-                  console.log(response.status)
-                }
-              })
+          const url = `upimgUrl`
+          const params = {
+            pic: this.upimg
+          }
+          bus.get(url, params, (data) => {
+            this.upimgResult = data.path + data.name
+          })
         } else {
           this.message('图片地址有误，请检查后重新上传', 'warning')
         }
       }, (error) => {
-        console.log(error)
+        this.message(error, 'error')
       })
     },
     // 获取电影
-    getFilmData (url) {
+    getFilmData (path) {
       this.search.length = 0
       this.searchResult = false
       this.loading = true
       // 通过url获取电影id
-      const id = url.match(/[0-9]{7,8}/)
-      this.$http.get(bus._val.path + 'getFilm?id=' + id[0])
-          .then((response) => {
-            if (response.status === 200) {
-              this.filmInfos = response.body
-              this.loading = false
-              this.searchResult = true
-            } else {
-              console.log(response.status)
-            }
-          })
+      const id = path.match(/[0-9]{7,8}/)
+      const url = `getFilm`
+      const url2 = `exist`
+      const params = {
+        id: id[0]
+      }
+      bus.get(url, params, (data) => {
+        this.filmInfos = data
+        this.loading = false
+        this.searchResult = true
+      })
       // 检索电影是否已存入数据库
-      this.$http.get(bus._val.path + 'exist?id=' + id[0])
-          .then((response) => {
-            if (response.status === 200) {
-              const data = response.body
-              if (data.results.length) {
-                this.objectid = data.results[0].objectId
-              } else {
-                this.objectid = ''
-              }
-            } else {
-              console.log(response.status)
-            }
-          })
+      bus.get(url2, params, (data) => {
+        if (data.results.length) {
+          this.objectid = data.results[0].objectId
+        } else {
+          this.objectid = ''
+        }
+      })
     },
     // 提交数据
     submitInfos () {
       if (this.objectid) {
-        const picBody = { movie: { __type: 'Pointer', className: 'movie', objectId: this.objectid }, images: this.upimgResult, rating: { average: 0, stars: 0, total: 0 }, status: 2 }
-        this.$http.post(bus._val.path + 'addPicture', picBody)
-            .then((response) => {
-              if (response.status === 200) {
-                this.upSuccess()
-              } else {
-                console.log(response.status)
-              }
-            })
+        const url = `addPicture`
+        const body = { movie: { __type: 'Pointer', className: 'movie', objectId: this.objectid }, images: this.upimgResult, rating: { average: 0, stars: 0, total: 0 }, status: 2 }
+        bus.post(url, body, (data) => {
+          this.upSuccess()
+        })
       } else {
+        const url = `addMovie`
         const body = {
           movie: {
             id: this.filmInfos.id,
@@ -283,14 +273,9 @@ export default {
           },
           picture: this.upimgResult
         }
-        this.$http.post(bus._val.path + 'addMovie', body)
-            .then((response) => {
-              if (response.status === 200) {
-                this.upSuccess()
-              } else {
-                console.log(response.status)
-              }
-            })
+        bus.post(url, body, (data) => {
+          this.upSuccess()
+        })
       }
     },
     // 上传成功
@@ -312,14 +297,13 @@ export default {
   watch: {
     filmName (val) {
       if (val) {
-        this.$http.get(bus._val.path + 'search?keyword=' + val)
-            .then((response) => {
-              if (response.status === 200) {
-                this.search = response.body
-              } else {
-                console.log(response.status)
-              }
-            })
+        const url = `search`
+        const params = {
+          keyword: val
+        }
+        bus.get(url, params, (data) => {
+          this.search = data
+        })
       } else {
         this.search.length = 0
       }

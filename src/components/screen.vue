@@ -86,7 +86,7 @@ export default {
         }
       }
       // 中英文匹配其一即算对
-      let final = regcnFun(this.regcn(cnVal), this.regcn(userVal)) || regenFun(this.regen(enVal), this.regen(userVal))
+      const final = regcnFun(this.regcn(cnVal), this.regcn(userVal)) || regenFun(this.regen(enVal), this.regen(userVal))
       return final
     },
     // 回答后的提示
@@ -101,7 +101,7 @@ export default {
     ranMessage (bol) {
       let arr
       if (bol) {
-        arr = ['厉害了我的哥，这都能猜对！', '大哥，你这是蒙对的吧！', '哎呦！不错哦！下一题还能才对么？', '6翻了，无敌是多么寂寞！', '就你牛逼！', '我不相信这是你猜对的，除非你亲我一下！', '又对了，你咋不上天呢！']
+        arr = ['厉害了我的哥，这都能猜对！', '大哥，你这是蒙对的吧！', '哎呦！不错哦！下一题还能猜对么？', '6翻了，无敌是多么寂寞！', '就你牛逼！', '我不相信这是你猜对的，除非你亲我一下！', '又对了，你咋不上天呢！']
       } else {
         arr = ['猜不中了吧，要加油啊！', '这都没猜对，蓝瘦，香菇！', '这一题我闭着眼睛都能猜对！', '前辈！在下对你的答案有不同的看法！', '你这么回答是什么意思？', '对方不想和你说话，并向你丢了一个正确答案！']
       }
@@ -112,14 +112,11 @@ export default {
     gameLog (str) {
       // 判断用户是否登录
       if (this.userid) {
-        this.$http.get(bus._val.path + 'gamelog/' + this.userid + '?result=' + str)
-            .then(function (response) {
-              if (response.status === 200) {
-                console.log(response.body)
-              } else {
-                console.log(response.status)
-              }
-            })
+        const url = `gamelog/${this.userid}`
+        const params = {
+          result: str
+        }
+        bus.get(url, params, (data) => {})
       }
     },
     // 清空输入框

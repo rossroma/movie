@@ -92,42 +92,34 @@ export default {
       if (this.likeMethod) {
         // 添加一个点击动画效果
         event.currentTarget.className = 'like-animate'
-        this.$http.get(bus._val.path + 'like/' + this.picId + '?bol=' + bol)
-            .then((response) => {
-              if (response.status === 200) {
-                console.log(response.body)
-              } else {
-                console.log(response.status)
-              }
-            })
+        const url = `like/${this.picId}`
+        const params = {
+          bol: bol
+        }
+        bus.get(url, params, (data) => {})
         this.likeMethod = false
       }
     },
     // 提交错误
     postErros () {
       if (this.errorMethod) {
-        this.$http.get(bus._val.path + 'addErrors?objectId=' + this.picId)
-            .then((response) => {
-              if (response.status === 200) {
-                this.message('bug已提交，谢谢你的反馈！', 'success')
-                console.log(response.body)
-              } else {
-                console.log(response.status)
-              }
-            })
+        const url = `addErrors`
+        const params = {
+          objectId: this.picId
+        }
+        bus.get(url, params, (data) => {
+          this.message('bug已提交，谢谢你的反馈！', 'success')
+        })
         this.errorMethod = false
       }
     },
     // 评级
     rating () {
-      this.$http.get(bus._val.path + 'rate/' + this.picId + '?rating=' + this.hard)
-          .then((response) => {
-            if (response.status === 200) {
-              console.log(response.body)
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = `rate/${this.picId}`
+      const params = {
+        rating: this.hard
+      }
+      bus.get(url, params, (data) => {})
     },
     // 提示信息
     message (mes, type) {

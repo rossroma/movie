@@ -97,31 +97,28 @@ export default {
     // 提交数据
     sendData () {
       if (this.validata && this.formData.username && this.formData.username && this.formData.email) {
-        this.$http.post(bus._val.path + 'register', this.formData)
-            .then((response) => {
-              if (response.status === 200) {
-                if (response.body.error) {
-                  if (response.body.code === 202) {
-                    this.message('错误：用户名' + this.formData.username + '已被使用', 'error')
-                  } else if (response.body.code === 203) {
-                    this.message('错误：邮箱' + this.formData.email + '已被使用', 'error')
-                  } else {
-                    this.message('错误：' + response.body.code + response.body.error, 'error')
-                  }
-                } else {
-                  const that = this
-                  Message({
-                    message: '注册成功，请登录。',
-                    duration: 1000,
-                    onClose () {
-                      that.$router.push('/login')
-                    }
-                  })
-                }
-              } else {
-                console.log(response.status)
+        const url = `register`
+        const body = this.formData
+        bus.post(url, body, (data) => {
+          if (data.error) {
+            if (data.code === 202) {
+              this.message('错误：用户名' + this.formData.username + '已被使用', 'error')
+            } else if (data.code === 203) {
+              this.message('错误：邮箱' + this.formData.email + '已被使用', 'error')
+            } else {
+              this.message('错误：' + data.code + data.error, 'error')
+            }
+          } else {
+            const that = this
+            Message({
+              message: '注册成功，请登录。',
+              duration: 1000,
+              onClose () {
+                that.$router.push('/login')
               }
             })
+          }
+        })
       }
     }
   }

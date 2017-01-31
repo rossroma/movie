@@ -47,7 +47,6 @@
     <div class="block mt10">
       <el-button size="small"><span @click="delItems()">批量删除</span></el-button>
       <el-pagination
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="1"
         :page-size="15"
@@ -79,28 +78,22 @@ export default {
   methods: {
     // 获取电影列表
     getMovieList () {
-      this.$http.get(bus._val.path + 'movie?page=' + this.page)
-          .then((response) => {
-            if (response.status === 200) {
-              let data = response.body
-              this.tableData = data.results
-              this.totalPages = data.count
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = `movie`
+      const params = {
+        page: this.page
+      }
+      bus.get(url, params, (data) => {
+        this.tableData = data.results
+        this.totalPages = data.count
+      })
     },
     // 删除
     delItem (objectId) {
-      this.$http.get(bus._val.path + 'delMovie/' + objectId)
-          .then((response) => {
-            if (response.status === 200) {
-              this.message('删除成功', 'success')
-              this.getMovieList()
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = `delMovie/${objectId}`
+      bus.get(url, {}, (data) => {
+        this.message('删除成功', 'success')
+        this.getMovieList()
+      })
     },
     delItems () {
       let arrId = ''
@@ -121,9 +114,6 @@ export default {
     },
     handleMultipleSelectionChange (val) {
       this.multipleSelection = val
-    },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
       this.page = (val - 1) * 15

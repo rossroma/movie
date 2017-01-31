@@ -37,7 +37,6 @@
     </el-table>
     <div class="block mt10">
       <el-pagination
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="1"
         :page-size="15"
@@ -68,19 +67,16 @@ export default {
   methods: {
     // 获取剧照列表
     getPictureList () {
-      this.$http.get(bus._val.path + 'picture?page=' + this.page + '&status=0&user=' + this.userinfo.objectId)
-          .then(function (response) {
-            if (response.status === 200) {
-              let data = response.body
-              this.tableData = data.results
-              this.totalPages = data.count
-            } else {
-              console.log(response.status)
-            }
-          })
-    },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      const url = `picture`
+      const params = {
+        page: this.page,
+        status: 0,
+        user: this.userinfo.objectId
+      }
+      bus.get(url, params, (data) => {
+        this.tableData = data.results
+        this.totalPages = data.count
+      })
     },
     handleCurrentChange (val) {
       this.page = (val - 1) * 15

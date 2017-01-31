@@ -44,7 +44,6 @@
     <div class="block mt10">
       <el-button size="small"><span @click="delItems()">批量删除</span></el-button>
       <el-pagination
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="1"
         :page-size="15"
@@ -76,32 +75,29 @@ export default {
   methods: {
     // 获取电影列表
     getPictureList () {
-      this.$http.get(bus._val.path + 'picture?page=' + this.page + '&status=' + 2)
-          .then((response) => {
-            if (response.status === 200) {
-              let data = response.body
-              this.tableData = data.results
-              this.totalPages = data.count
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = `picture`
+      const params = {
+        page: this.page,
+        status: 2
+      }
+      bus.get(url, params, (data) => {
+        this.tableData = data.results
+        this.totalPages = data.count
+      })
     },
     // 删除
     delItem (objectId, status) {
       if (status !== 0) {
         status = 1
       }
-      console.log(status)
-      this.$http.get(bus._val.path + 'delPicture/' + objectId + '?status=' + status)
-          .then((response) => {
-            if (response.status === 200) {
-              this.message('操作成功', 'success')
-              this.getPictureList()
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = `delPicture/${objectId}`
+      const params = {
+        status: status
+      }
+      bus.get(url, params, (data) => {
+        this.message('操作成功', 'success')
+        this.getPictureList()
+      })
     },
     delItems () {
       let arrId = ''
@@ -122,9 +118,6 @@ export default {
     },
     handleMultipleSelectionChange (val) {
       this.multipleSelection = val
-    },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
       this.page = (val - 1) * 15

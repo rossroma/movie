@@ -46,36 +46,30 @@ export default {
       this.currentView = index
     },
     loginStatus () {
-      this.$http.get(bus._val.path + 'loginstatus')
-          .then(function (response) {
-            if (response.status === 200) {
-              if (response.body) {
-                this.getUser(response.body.obid)
-              } else {
-                var that = this
-                Message({
-                  message: '登录已超时，请重新登录',
-                  duration: 1500,
-                  onClose: function () {
-                    that.$router.push('/')
-                  }
-                })
-              }
-            } else {
-              console.log(response.status)
+      const url = `loginstatus`
+      bus.get(url, {}, (data) => {
+        if (data) {
+          this.getUser(data.obid)
+        } else {
+          const that = this
+          Message({
+            message: '登录已超时，请重新登录',
+            duration: 1500,
+            onClose: function () {
+              that.$router.push('/')
             }
           })
+        }
+      })
     },
     getUser (objectId) {
-      this.$http.get(bus._val.path + 'getuser?id=' + objectId)
-          .then(function (response) {
-            if (response.status === 200) {
-              this.user = response.body
-              console.log(this.user)
-            } else {
-              console.log(response.status)
-            }
-          })
+      const url = `getuser`
+      const params = {
+        id: objectId
+      }
+      bus.get(url, params, (data) => {
+        this.user = data
+      })
     }
   }
 }
