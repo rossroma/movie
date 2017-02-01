@@ -1,6 +1,7 @@
 <template>
   <div class="picture-list">
     <el-table
+      v-loading.body="loading"
       :data="tableData"
       style="width: 100%"
       @selection-change="handleMultipleSelectionChange">
@@ -12,7 +13,7 @@
         inline-template
         width="80"
         label="缩略图">
-        <img height="40" :src="row.thumb" alt="">
+        <a :href="row.images+'-large'" target="_blank"><img height="40" :src="row.images+'-guessmovie'"></a>
       </el-table-column>
       <el-table-column
         property="title"
@@ -71,7 +72,7 @@ export default {
       multipleSelection: [],
       totalPages: 0,
       page: 0,
-      message: ''
+      loading: true
     }
   },
   props: ['images'],
@@ -83,6 +84,7 @@ export default {
         page: this.page
       }
       bus.get(url, params, (data) => {
+        this.loading = false
         this.tableData = data.results
         this.totalPages = data.count
       })

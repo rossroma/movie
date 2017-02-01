@@ -1,20 +1,19 @@
 <template>
-  <div class="signin">
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-input size="large" placeholder="输入用户名" v-model="username">
-        </el-input>
-      </el-col>
-      <el-col :span="24">
-        <el-input size="large" type="password" placeholder="输入密码" v-model="password">
-           <el-button slot="append" @click.native="signin" icon="d-arrow-right"></el-button>
-        </el-input>
-      </el-col>
-      <el-col :span="24">
-        <p class="v-forget"><a href="">忘记密码？</a></p>
-      </el-col>
-    </el-row>
-  </div>
+  <el-form :model="formData" :rules="rules" ref="formData" label-width="100px" class="signin">
+    <el-form-item label="用户名" prop="username">
+      <el-input size="large" v-model="formData.username"></el-input>
+    </el-form-item>
+    <el-form-item label="密码" prop="password">
+      <el-input size="large" type="password" v-model="formData.password"></el-input>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm('formData')">登录</el-button>
+      <el-button @click="resetForm('formData')">重置</el-button>
+    </el-form-item>
+    <el-form-item>
+      <p class="v-forget"><a href="javascript:;">忘记密码？</a></p>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script>
@@ -24,29 +23,40 @@ import { Message } from 'element-ui'
 export default {
   data () {
     return {
-      username: null,
-      password: null,
-      objectId: null
+      formData: {
+        username: null,
+        password: null
+      },
+      rules: {
+        username: { required: true, message: '请输入用户名', trigger: 'blur' },
+        password: { required: true, message: '请输入密码', trigger: 'blur' }
+      }
     }
   },
   methods: {
-    signin () {
-      if (this.username && this.password) {
-        const url = `signin`
-        const body = {
-          username: this.username,
-          password: this.password
+    // 登录验证
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.signin()
         }
-        bus.post(url, body, (data) => {
-          if (data.error) {
-            this.message('账号或密码错误', 'warning')
-          } else {
-            this.$router.push('/')
-          }
-        })
-      } else {
-        this.message('用户名或密码不能为空', 'warning')
-      }
+      })
+    },
+    // 重置
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
+    },
+    // 登录
+    signin () {
+      const url = `signin`
+      const body = this.formData
+      bus.post(url, body, (data) => {
+        if (data.error) {
+          this.message('账号或密码错误', 'warning')
+        } else {
+          this.$router.push('/')
+        }
+      })
     },
     // 提示信息
     message (mes, type) {
@@ -61,10 +71,7 @@ export default {
 
 <style lang="less" scoped>
   .signin {
-    padding: 30px 300px 0;
-    .el-col {
-      height: 70px;
-    }
+    padding: 30px 260px 0 240px;
     .v-forget {
       text-align: right;
       a {
