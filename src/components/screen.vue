@@ -9,6 +9,7 @@
       placeholder="请输入电影名称"
       :number="true"
       size="large"
+      @keyup.native.enter="enterAnswer"
       v-model="filmName">
       <el-button slot="append" @click.native="enterAnswer">确定&跳过</el-button>
     </el-input>

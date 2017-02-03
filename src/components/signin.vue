@@ -4,7 +4,7 @@
       <el-input size="large" v-model="formData.username"></el-input>
     </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input size="large" type="password" v-model="formData.password"></el-input>
+      <el-input size="large" type="password" v-model="formData.password" @keyup.native.enter="submitForm('formData')"></el-input>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm('formData')">登录</el-button>

@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     quit () {
-      MessageBox('退出登录', '此操作将退出登录, 是否继续?', {
+      MessageBox.confirm('退出登录', '此操作将退出登录, 是否继续?', {
         type: 'warning'
       }).then(() => {
         const url = `quit`

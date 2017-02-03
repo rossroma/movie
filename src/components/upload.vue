@@ -20,16 +20,22 @@
         </el-tabs>
          <el-row :gutter="20">
           <el-col :span="12">
-            <form v-if="tab" enctype="multipart/form-data" method="post" name="fileinfo">
-              <input type="file" style="display:none;" name="file" @change="upLocalImg" required />
-              <div class="v-uparea" @click="triggerFile">点击选择图片</div>
-            </form>
+            <el-upload
+              v-if="tab"
+              :action="uploadPath"
+              type="drag"
+              :thumbnail-mode="true"
+              :on-success="handleSuccess"
+              :on-error="handleError">
+              <i class="el-icon-upload"></i>
+              <div class="el-dragger__text">将文件拖到此处，或<em>点击上传</em></div>
+            </el-upload>
             <div v-if="!tab">
               <el-input placeholder="输入图片的URL" style="width: 400px;" v-model="upimg">
                 <el-button slot="append" @click.native="onlineImg">上传</el-button>
               </el-input>
+              <img v-if="upimgResult" class="v-img-result" :src="upimgResult" alt="">
             </div>
-            <img v-if="upimgResult" class="v-img-result" :src="upimgResult" alt="">
           </el-col>
           <el-col :span="12">
             <el-input placeholder="请输入电影标题" v-model.lazy="filmName">
@@ -114,7 +120,6 @@
             </el-row>
           </el-col>
         </el-row>
-
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" size="large" v-if="upButton" @click.native="submitInfos">提交</el-button>
@@ -151,42 +156,25 @@ export default {
       upimg: '',
       upimgResult: '',
       objectid: '',
-      tab: true
+      tab: true,
+      uploadPath: bus.path + 'upimg'
     }
   },
   methods: {
+    handleSuccess (response, file) {
+      this.upimgResult = response
+      console.log(response)
+    },
+    handleError (err) {
+      this.message('上传错误，请重新尝试！', 'error')
+      console.log(err)
+    },
     // 选项卡
     handleClick (val) {
       if (val.name === 'local') {
         this.tab = true
       } else {
         this.tab = false
-      }
-    },
-    // 出发上传控件
-    triggerFile () {
-      const objFile = document.forms.namedItem('fileinfo').file
-      objFile.click()
-    },
-    // 上传本地图片
-    upLocalImg () {
-      const form = document.forms.namedItem('fileinfo')
-      const fileUrl = new RegExp(form.file.value.slice(-4), 'i')
-      const imgTypes = '.jpg,.jpeg,.png'
-      if (fileUrl.test(imgTypes)) {
-        const oData = new window.FormData(form)
-        const oReq = new window.XMLHttpRequest()
-        oReq.open('POST', bus.path + 'upimg', true)
-        oReq.onload = (oEvent) => {
-          if (oReq.status === 200) {
-            this.upimgResult = oReq.responseText
-          } else {
-            this.message(oReq, 'warning')
-          }
-        }
-        oReq.send(oData)
-      } else {
-        this.message('请上传正确的图片格式', 'warning')
       }
     },
     CheckImgExists (imgurl) {
