@@ -13,7 +13,7 @@
         inline-template
         width="80"
         label="缩略图">
-        <a :href="row.images+'-large'" target="_blank"><img height="40" :src="row.images+'-guessmovie'"></a>
+        <img height="40" :src="row.thumb">
       </el-table-column>
       <el-table-column
         property="title"
@@ -124,5 +124,3 @@ export default {
   }
 }
 </script>
-
-
