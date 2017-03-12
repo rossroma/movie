@@ -109,7 +109,6 @@ export default {
       }
     },
     message (mes, type) {
-      console.log('message')
       Message({
         message: mes,
         type: type
