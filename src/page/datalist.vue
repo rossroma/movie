@@ -1,14 +1,13 @@
 <template>
   <div class="wrap">
     <h1>内容管理</h1>
-    <el-tabs type="card" @tab-click="handleClick">
-      <el-tab-pane name="pend" label="待审核"></el-tab-pane>
-      <el-tab-pane name="picture" label="电影剧照"></el-tab-pane>
-      <el-tab-pane name="movie" label="电影"></el-tab-pane>
+    <el-tabs type="card" v-model="currentView">
+      <el-tab-pane name="pendList" label="待审核"></el-tab-pane>
+      <el-tab-pane name="errorsList" label="答案评审"></el-tab-pane>
+      <el-tab-pane name="pictureList" label="电影剧照"></el-tab-pane>
+      <el-tab-pane name="movieList" label="电影"></el-tab-pane>
     </el-tabs>
-    <pend-list v-if="tab === 'pend'"></pend-list>
-    <picture-list v-if="tab === 'picture'"></picture-list>
-    <movie-list v-if="tab === 'movie'"></movie-list>
+    <component :is="currentView"></component>
   </div>
 </template>
 
@@ -16,22 +15,19 @@
 import pictureList from '../components/pictureList'
 import pendList from '../components/pendList'
 import movieList from '../components/movieList'
+import errorstList from '../components/errorsList'
 
 export default {
   data () {
     return {
-      tab: 'pend'
+      currentView: 'pendList'
     }
   },
   components: {
     pictureList,
     pendList,
-    movieList
-  },
-  methods: {
-    handleClick (val) {
-      this.tab = val.name
-    }
+    movieList,
+    errorsList
   }
 }
 </script>

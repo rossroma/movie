@@ -72,7 +72,6 @@ export default {
       loading: true
     }
   },
-  props: ['images'],
   methods: {
     // 获取电影列表
     getPictureList () {

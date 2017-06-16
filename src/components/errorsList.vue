@@ -1,5 +1,5 @@
 <template>
-  <div class="picture-list">
+  <div class="errors-list">
     <el-table
       v-loading.body="loading"
       :data="tableData"
@@ -12,7 +12,7 @@
       <el-table-column
         inline-template
         width="100"
-        label="剧照">
+        label="缩略图">
         <a :href="row.images+'-large'" target="_blank"><img height="40" :src="row.images+'-guessmovie'"></a>
       </el-table-column>
       <el-table-column
@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column
         inline-template
-        label="难度"
+        label="待审标题"
         width="100">
         <span>{{ row.rating.average }}</span>
       </el-table-column>
@@ -38,6 +38,7 @@
         label="操作">
         <div>
           <a href="javascript:;" @click="delItem( row.objectId )">删除</a>
+          <a href="javascript:;" @click="delItem( row.objectId, 0 )">审核</a>
         </div>
       </el-table-column>
     </el-table>
@@ -60,7 +61,7 @@ import { Message } from 'element-ui'
 
 export default {
   mounted () {
-    this.getPictureList()
+    this.getErrorsList()
   },
   data () {
     return {
@@ -72,12 +73,12 @@ export default {
     }
   },
   methods: {
-    // 获取剧照列表
-    getPictureList () {
-      const url = `picture`
+    // 获取答案评审列表
+    getErrorsList () {
+      const url = `errors`
       const params = {
         page: this.page,
-        status: 0
+        status: 2
       }
       bus.get(url, params, (data) => {
         this.loading = false
@@ -86,14 +87,17 @@ export default {
       })
     },
     // 删除
-    delItem (objectId) {
+    delItem (objectId, status) {
+      if (status !== 0) {
+        status = 1
+      }
       const url = `delPicture/${objectId}`
       const params = {
-        status: 1
+        status: status
       }
       bus.get(url, params, (data) => {
-        this.message('删除成功', 'success')
-        this.getPictureList()
+        this.message('操作成功', 'success')
+        this.getErrorsList()
       })
     },
     delItems () {
@@ -118,7 +122,7 @@ export default {
     },
     handleCurrentChange (val) {
       this.page = (val - 1) * 15
-      this.getPictureList()
+      this.getErrorsList()
     }
   }
 }
