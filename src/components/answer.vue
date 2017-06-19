@@ -36,17 +36,17 @@
         </div>
         <ul class="icon-list">
           <li>
-            <span @click="like(1, $event)"><i class="el-icon-star-on"></i>
-              <em>Like</em>
+            <span @click="like(1, $event)"><i class="iconfont icon-like"></i>
+              <em>喜欢</em>
             </span>
           </li>
           <li>
-            <span @click="like(0, $event)"><i class="el-icon-delete"></i>
-              <em>Unlike</em>
+            <span @click="like(0, $event)"><i class="iconfont icon-unlike"></i>
+              <em>不喜欢</em>
             </span>
           </li>
           <li>
-            <span @click="postErros(userAnswer)"><i class="el-icon-warning"></i>
+            <span @click="postErros(userAnswer)"><i class="iconfont icon-bug"></i>
               <em>{{isRight ? '有错误' : '采纳我的答案'}}</em>
             </span>
           </li>
@@ -140,6 +140,7 @@ export default {
 </script>
 
 <style lang="less">
+  @import url('../asserts/iconfont.css');
   .v-answer{
     border: 1px solid #eee;
     border-radius: 4px;
