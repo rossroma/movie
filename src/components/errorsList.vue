@@ -13,32 +13,32 @@
         inline-template
         width="100"
         label="缩略图">
-        <a :href="row.images+'-large'" target="_blank"><img height="40" :src="row.images+'-guessmovie'"></a>
+        <a target="_blank"><img height="40" :src="row.movie.thumb"></a>
       </el-table-column>
       <el-table-column
         inline-template
         label="电影"
-        width="240">
-        <span>{{ row.movie.objectId }}</span>
+        width="220">
+        <span>{{ row.movie.title }}</span>
       </el-table-column>
       <el-table-column
         inline-template
         label="待审标题"
-        width="100">
-        <span>{{ row.rating.average }}</span>
+        width="200">
+        <span>{{ row.userAnswer }}</span>
       </el-table-column>
       <el-table-column
         property="createdAt"
         sortable
         label="日期"
-        width="240">
+        width="200">
       </el-table-column>
       <el-table-column
         inline-template
         label="操作">
         <div>
           <a href="javascript:;" @click="delItem( row.objectId )">删除</a>
-          <a href="javascript:;" @click="delItem( row.objectId, 0 )">审核</a>
+          <a href="javascript:;" @click="delItem( row.objectId, 2, row.movie.objectId, row.userAnswer )">审核</a>
         </div>
       </el-table-column>
     </el-table>
@@ -56,6 +56,8 @@
 </template>
 
 <script>
+// status 0 删除 1 待审核 2 已审核
+
 import bus from '../bus'
 import { Message } from 'element-ui'
 
@@ -78,7 +80,7 @@ export default {
       const url = `errors`
       const params = {
         page: this.page,
-        status: 2
+        status: 1
       }
       bus.get(url, params, (data) => {
         this.loading = false
@@ -87,13 +89,15 @@ export default {
       })
     },
     // 删除
-    delItem (objectId, status) {
-      if (status !== 0) {
-        status = 1
+    delItem (objectId, status, movieId, answer) {
+      if (status !== 2) {
+        status = 0
       }
-      const url = `delPicture/${objectId}`
+      const url = `delAnswers/${objectId}`
       const params = {
-        status: status
+        status: status,
+        movieId: movieId,
+        userAnswer: answer
       }
       bus.get(url, params, (data) => {
         this.message('操作成功', 'success')

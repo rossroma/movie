@@ -256,7 +256,7 @@ export default {
             directors: arrToStr(this.filmInfos.directors),
             casts: arrToStr(this.filmInfos.casts),
             aka: arrToStr(this.filmInfos.aka),
-            summary: this.filmInfos.summary.slice(0, 160),
+            summary: this.filmInfos.summary,
             status: 0
           },
           picture: this.upimgResult

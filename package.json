@@ -10,6 +10,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "babel-plugin-component": "^0.9.1",
     "element-ui": "^1.1.6",
     "vue": "^2.1.10",
     "vue-resource": "^1.1.2",

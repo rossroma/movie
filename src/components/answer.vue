@@ -1,5 +1,5 @@
 <template>
-  <div class="v-answer" :style="{ height: iHeight + 'px' }">
+  <div class="v-answer">
     <h2>{{ movie.title }} <span v-if="movie.title !== movie.original_title">{{ movie.original_title }}</span></h2>
     <div class="v-article">
       <div class="v-main-pic">
@@ -46,8 +46,8 @@
             </span>
           </li>
           <li>
-            <span @click="postErros"><i class="el-icon-warning"></i>
-              <em>有错误</em>
+            <span @click="postErros(userAnswer)"><i class="el-icon-warning"></i>
+              <em>{{isRight ? '有错误' : '采纳我的答案'}}</em>
             </span>
           </li>
         </ul>
@@ -56,6 +56,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -72,7 +73,7 @@ export default {
       rate: {}
     }
   },
-  props: ['movie', 'iHeight', 'picId'],
+  props: ['movie', 'picId', 'userAnswer', 'isRight'],
   computed: {
     scoreStar () {
       return this.movie.rating / 2
@@ -84,8 +85,7 @@ export default {
       if (this.hard) {
         this.rating()
       }
-      bus.$emit('answer-show', false)
-      bus.$emit('get-new')
+      this.$emit('get-new')
     },
     // 喜欢
     like (bol, event) {
@@ -100,15 +100,22 @@ export default {
         this.likeMethod = false
       }
     },
+    // 打开Dialog
+    openDialog () {
+
+    },
     // 提交错误
-    postErros () {
+    postErros (val) {
       if (this.errorMethod) {
         const url = `addErrors`
-        const params = {
-          objectId: this.picId
+        let params = {
+          objectId: this.movie.objectId
+        }
+        if (!this.isRight) {
+          params.answer = val
         }
         bus.get(url, params, (data) => {
-          this.message('bug已提交，谢谢你的反馈！', 'success')
+          this.message('问题已提交，谢谢你的反馈！', 'success')
         })
         this.errorMethod = false
       }
@@ -138,11 +145,12 @@ export default {
     border-radius: 4px;
     padding: 30px;
     box-sizing: border-box;
-    height: 562px;
     background-color: rgba(255, 255, 255, 0.8);
     position: absolute;
-    width: 1000px;
-    top: 85px;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
     h2 {
       margin-top: 0;
     }
@@ -252,5 +260,20 @@ export default {
   }
   @keyframes clickaction {
     50% {transform: scale(1.2);}
+  }
+  .errorlist {
+    .item {
+      padding: 10px;
+      color: #222;
+      font-weight: 200;
+      font-size: 14px;
+      cursor: pointer;
+      &:first-child {
+        border-bottom: 1px solid #eaeefb;
+      }
+      &:hover {
+        color: #20a0ff;
+      }
+    }
   }
 </style>

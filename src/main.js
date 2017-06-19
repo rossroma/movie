@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 import Resource from 'vue-resource'
 Vue.use(Resource)
 
-import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem, FormItem, Upload } from 'element-ui'
+import { Button, Input, Form, Row, Col, Rate, Loading, Dialog, Tabs, TabPane, Pagination, Table, tableColumn, Checkbox, Menu, MenuItem, FormItem, Upload, Popover } from 'element-ui'
 Vue.use(Button)
 Vue.use(Input)
 Vue.use(Checkbox)
@@ -23,6 +23,7 @@ Vue.use(Menu)
 Vue.use(MenuItem)
 Vue.use(FormItem)
 Vue.use(Upload)
+Vue.use(Popover)
 
 // route
 Vue.use(VueRouter)

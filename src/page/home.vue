@@ -1,8 +1,28 @@
 <template>
   <div class="wrap">
     <h1>猜电影</h1>
-    <screen :images="newImg" :rightAnswer="currentFilm.movie" :answerText="!answerShow"></screen>
-    <answer v-if="answerShow" :iHeight="imgHeight" :movie="currentFilm.movie" :picId="currentFilm.objectId"></answer>
+    <div class="v-screen" v-loading="loading">
+      <div class="v-img">
+        <img ref="pictrue" :src="pictrue">
+      </div>
+      <el-input
+        v-if="inputShow"
+        placeholder="请输入电影名称"
+        :number="true"
+        size="large"
+        @keyup.native.enter="enterAnswer"
+        v-model="filmName">
+        <el-button slot="append" @click.native="enterAnswer">确定&跳过</el-button>
+      </el-input>
+      <answer
+        v-if="answerShow"
+        :movie="movieInfos"
+        :picId="imageId"
+        :userAnswer="filmName"
+        :isRight="isRight"
+        @get-new="getNewFilm">
+      </answer>
+    </div>
     <upload :login="userName"></upload>
     <div class="v-foot-nav">
       <router-link to="/about">About</router-link>
@@ -13,42 +33,38 @@
 </template>
 
 <script>
-import screen from '../components/screen'
 import bus from '../bus'
+import { Notification } from 'element-ui'
 
 export default {
-  created () {
-    bus.$on('get-new', this.getNewFilm)
-    bus.$on('answer-show', this.showAnswer)
-    bus.$on('screen-height', this.resetHeight)
+  data () {
+    return {
+      pictrue: '', // 剧照URL
+      imageId: '', // 剧照ID
+      movieInfos: {}, // 电影详情
+      inputShow: true, // 是否显示输入框
+      answerShow: false, // 是否显示答案
+      picHeight: 0,
+      userName: '',
+      userObid: '',
+      pageCount: '', // 剧照总数
+      loading: true,
+      filmName: '',
+      isRight: false // 答案是否正确
+    }
   },
-  beforeDestroy () {
-    bus.$off('get-new', this.getNewFilm)
-    bus.$off('answer-show', this.showAnswer)
-    bus.$off('screen-height', this.resetHeight)
+  computed: {
+    newImg () {
+      if (this.image) {
+        return this.image + '-large'
+      } else {
+        return this.image
+      }
+    }
   },
   mounted () {
     this.getCount()
     this.loginStatus()
-  },
-  data () {
-    return {
-      currentFilm: {},
-      answerShow: false,
-      imgHeight: 0,
-      userName: '',
-      userObid: '',
-      pageCount: ''
-    }
-  },
-  components: {
-    screen,
-    answer: (resolve) => {
-      require(['../components/answer'], resolve)
-    },
-    upload: (resolve) => {
-      require(['../components/upload'], resolve)
-    }
   },
   methods: {
     // 获取剧照总数
@@ -69,13 +85,18 @@ export default {
     },
     // 随机获取一部电影
     getNewFilm () {
-      bus.$emit('loading', true)
+      this.loading = true
+      this.pictrue = ''
+      this.clearFilm()
+      this.answerShow = false
       const url = 'rd-pic'
       const params = {
         rdNum: this.getRandom()
       }
       bus.get(url, params, (data) => {
-        this.currentFilm = data.results[0]
+        this.pictrue = data.images
+        this.imageId = data.objectId
+        this.loading = false
       })
     },
     // 控制答案是否显示
@@ -85,10 +106,6 @@ export default {
       } else {
         this.answerShow = false
       }
-    },
-    // 重置answer页面高度
-    resetHeight (h) {
-      this.imgHeight = h
     },
     // 条件判断 随机数是否被初始化
     getRandom () {
@@ -121,21 +138,110 @@ export default {
       } else {
         return this.initRandom()
       }
+    },
+    // 输入答案
+    enterAnswer () {
+      if (this.filmName) {
+        this.inputShow = false
+        const url = 'answerMatch'
+        const params = {
+          answer: this.filmName,
+          objectId: this.imageId
+        }
+        bus.get(url, params, (data) => {
+          if (data.isMatch) {
+            this.notify(1, this.ranMessage(1))
+            this.gameLog('right')
+          } else {
+            this.notify(0, this.ranMessage())
+            this.gameLog()
+          }
+          this.isRight = data.isMatch
+          this.movieInfos = data
+          this.answerShow = true
+        })
+      } else {
+        // 输入为空时跳过该题目
+        this.getNewFilm()
+      }
+    },
+    // 回答后的提示
+    notify (type, message) {
+      Notification({
+        title: type ? '答对啦！' : '答错了！',
+        message: message,
+        type: type ? 'success' : 'error'
+      })
+    },
+    // 随机显示回答提示语
+    ranMessage (bol) {
+      let arr
+      if (bol) {
+        arr = ['厉害了我的哥，这都能猜对！', '大哥，你这是蒙对的吧！', '哎呦！不错哦！下一题还能猜对么？', '6翻了，无敌是多么寂寞！', '就你牛逼！', '我不相信这是你猜对的，除非你亲我一下！', '又对了，你咋不上天呢！']
+      } else {
+        arr = ['猜不中了吧，要加油啊！', '这都没猜对，蓝瘦，香菇！', '这一题我闭着眼睛都能猜对！', '前辈！在下对你的答案有不同的看法！', '你这么回答是什么意思？', '对方不想和你说话，并向你丢了一个正确答案！']
+      }
+      const num = Math.floor(Math.random() * arr.length)
+      return arr[num]
+    },
+    // 答题记录
+    gameLog (str) {
+      // 判断用户是否登录
+      if (this.userid) {
+        const url = `gamelog/${this.userid}`
+        const params = {
+          result: str
+        }
+        bus.get(url, params, (data) => {})
+      }
+    },
+    // 清空输入框
+    clearFilm () {
+      this.filmName = ''
+      this.inputShow = true
     }
   },
-  computed: {
-    newImg () {
-      if (this.currentFilm.images) {
-        return this.currentFilm.images + '-large'
-      } else {
-        return ''
-      }
+  components: {
+    answer: (resolve) => {
+      require(['../components/answer'], resolve)
+    },
+    upload: (resolve) => {
+      require(['../components/upload'], resolve)
     }
   }
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+  .wrap {
+    .v-screen {
+      position: relative;
+      .v-img {
+        display: block;
+        overflow: hidden;
+        border-radius: 4px;
+        position: relative;
+        min-height: 400px;
+        transition: height 0.3s ease;
+        .el-loading-demo {
+          height: 100%;
+          width: 100%;
+          left: 0;
+          top: 0;
+        }
+        img {
+          width: 100%;
+          display: block;
+        }
+      }
+    }
+    .el-input {
+      margin-top: 10px;
+      position: absolute;
+      left: 0;
+      top: 100%;
+    }
+  }
   .bg-gray-lighter {
     background-color: #eff2f7;
   }

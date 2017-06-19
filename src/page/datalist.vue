@@ -3,7 +3,7 @@
     <h1>内容管理</h1>
     <el-tabs type="card" v-model="currentView">
       <el-tab-pane name="pendList" label="待审核"></el-tab-pane>
-      <el-tab-pane name="errorsList" label="答案评审"></el-tab-pane>
+      <el-tab-pane name="errorstList" label="答案评审"></el-tab-pane>
       <el-tab-pane name="pictureList" label="电影剧照"></el-tab-pane>
       <el-tab-pane name="movieList" label="电影"></el-tab-pane>
     </el-tabs>
@@ -27,7 +27,7 @@ export default {
     pictureList,
     pendList,
     movieList,
-    errorsList
+    errorstList
   }
 }
 </script>
