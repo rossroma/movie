@@ -14,23 +14,25 @@
             <li>⑤ 检查电影剧照与电影信息，确认无误后点击提交按钮，剧照上传成功！</li>
           </ul>
         </div>
-        <el-tabs type="card" @tab-click="handleClick">
+        <el-tabs type="card" v-model="activeName">
           <el-tab-pane name="local" label="本地图片上传"></el-tab-pane>
           <el-tab-pane name="online" label="在线图片上传"></el-tab-pane>
         </el-tabs>
          <el-row :gutter="20">
           <el-col :span="12">
             <el-upload
-              v-if="tab"
+              v-if="activeName === 'local'"
+              class="upload-demo"
               :action="uploadPath"
-              type="drag"
+              drag
               :thumbnail-mode="true"
               :on-success="handleSuccess"
               :on-error="handleError">
               <i class="el-icon-upload"></i>
               <div class="el-dragger__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div v-if="!tab">
+
+            <div v-else>
               <el-input placeholder="输入图片的URL" style="width: 400px;" v-model="upimg">
                 <el-button slot="append" @click.native="onlineImg">上传</el-button>
               </el-input>
@@ -156,7 +158,7 @@ export default {
       upimg: '',
       upimgResult: '',
       objectid: '',
-      tab: true,
+      activeName: 'local',
       uploadPath: bus.path + 'upimg'
     }
   },
@@ -168,14 +170,6 @@ export default {
     handleError (err) {
       this.message('上传错误，请重新尝试！', 'error')
       console.log(err)
-    },
-    // 选项卡
-    handleClick (val) {
-      if (val.name === 'local') {
-        this.tab = true
-      } else {
-        this.tab = false
-      }
     },
     CheckImgExists (imgurl) {
       const ImgObj = new window.Image() // 判断图片是否存在

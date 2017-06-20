@@ -3,7 +3,7 @@
     <h1>猜电影</h1>
     <div class="v-screen" v-loading="loading">
       <div class="v-img">
-        <img ref="pictrue" :src="pictrue">
+        <img ref="pictrue" :src="newImg">
       </div>
       <el-input
         v-if="inputShow"
@@ -55,10 +55,10 @@ export default {
   },
   computed: {
     newImg () {
-      if (this.image) {
-        return this.image + '-large'
+      if (this.pictrue) {
+        return this.pictrue + '-large'
       } else {
-        return this.image
+        return this.pictrue
       }
     }
   },
