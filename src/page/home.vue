@@ -63,6 +63,7 @@ export default {
     }
   },
   mounted () {
+    this.getNewFilm()
     this.getCount()
     this.loginStatus()
   },
@@ -72,7 +73,6 @@ export default {
       const url = 'getCount'
       bus.get(url, {}, (data) => {
         this.pageCount = data.count
-        this.getNewFilm()
       })
     },
     // 查询登录状态
@@ -109,6 +109,10 @@ export default {
     },
     // 条件判断 随机数是否被初始化
     getRandom () {
+      // 是否已获取到剧照总数，如果没有，则随机生成一个0-100数字返回
+      if (!this.pageCount) {
+        return Math.ceil(Math.random() * 100)
+      }
       const randomArray = bus.storage().get('RANDOM_ARRAY')
       if (randomArray) {
         const arr = `[${randomArray}]`

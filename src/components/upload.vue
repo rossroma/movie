@@ -25,7 +25,6 @@
               class="upload-demo"
               :action="uploadPath"
               drag
-              :thumbnail-mode="true"
               :on-success="handleSuccess"
               :on-error="handleError">
               <i class="el-icon-upload"></i>
@@ -165,7 +164,7 @@ export default {
   methods: {
     handleSuccess (response, file) {
       this.upimgResult = response
-      console.log(response)
+      console.log('success', response)
     },
     handleError (err) {
       this.message('上传错误，请重新尝试！', 'error')
